@@ -10,8 +10,6 @@
     <a href="#License"> License </a> |
 </h3> 
 
-------------------------------------------------
-
 ## Description
 
 Pack of mini-games on Python
