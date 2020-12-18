@@ -100,8 +100,14 @@ pip install pygame_menu
 * [PyGame-menu](https://pygame-menu.readthedocs.io/en/latest/) - PyGame's library for creating menu
 
 
-## Author
+## Authors
 
+### [**Derbin Dmitriy**](https://github.com/T1GIT)
+
+#### Student of the Financial University
+##### Group: PI19-5
+
+#### Space Battle
 * [**Derbin Dmitriy**](https://github.com/T1GIT) - controls, ship, project structure, many improvements
 * [**Bakanov Artem**](https://github.com/Attilene) - meteors, rockets, colliding, game
 * [**Kurtaev Damir**](https://github.com/Amikuto) - menu, sound
