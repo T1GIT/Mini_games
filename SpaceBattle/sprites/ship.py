@@ -15,7 +15,7 @@ class Ship(pg.sprite.Sprite):
     Can shooting rockets
     Can by destroyed by meteors
     """
-    accuracy = 50 / Conf.Ship.ACCURACY
+    _accuracy = 50 / Conf.Control.Mouse.ACCURACY
 
     def __init__(self):
         super().__init__()
@@ -98,8 +98,8 @@ class Ship(pg.sprite.Sprite):
         d_deg = degrees(atan2(y, x)) - self.angle
         if d_deg > 180: d_deg -= 360
         elif d_deg < -180: d_deg += 360
-        if (not smooth) or abs(d_deg) > self.accuracy * Conf.System.SCALE:
-            self.angle += (d_deg / Conf.Ship.SMOOTH * Conf.System.SCALE) if smooth else d_deg
+        if (not smooth) or abs(d_deg) > self._accuracy * Conf.System.SCALE:
+            self.angle += (d_deg / Conf.Control.Mouse.SMOOTH * Conf.System.SCALE) if smooth else d_deg
             self.image = pg.transform.rotate(
                 self.texture_fire if self.with_fire else self.texture_normal, self.angle - 90)
             self.rect = self.image.get_rect(center=self.rect.center)

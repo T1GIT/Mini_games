@@ -1,7 +1,7 @@
 from components.window import Window
 
 
-class CrosserAndZeros:
+class Crosses:
     def __init__(self):
         self.root = Window()
 
@@ -10,5 +10,5 @@ class CrosserAndZeros:
 
 
 if __name__ == "__main__":
-    game = CrosserAndZeros()
+    game = Crosses()
     game.start()

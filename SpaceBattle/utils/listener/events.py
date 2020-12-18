@@ -81,6 +81,8 @@ class Gamepad:
         RT = 2
         BACK = 6
         START = 7
+        LS = 8
+        RS = 9
 
 
 class Device:

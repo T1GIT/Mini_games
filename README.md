@@ -6,7 +6,7 @@
     <a href="#Description"> Description </a> |
     <a href="#Getting-Started"> Getting Started </a> |
     <a href="#Built-With"> Built With </a> |
-    <a href="#Author"> Author </a> |
+    <a href="#Authors"> Authors </a> |
     <a href="#License"> License </a> |
 </h3> 
 
@@ -19,26 +19,40 @@ Includes:
 
 Game with flying _asteroids_. You play as a _spaceship_, shooting _rockets_.
 
-**Control schemas:**
+**Control**
 
-1) _Keyboard_
+* _Keyboard_
     * W, A, S, D, arrow keys - move
     * Mouse - rotate
     * Left Mouse Button - shoot
     * Esc - pause
-    * Space - self-destruction
+    * Space + Enter - self-destruction
     
-2) _Gamepad_
-    LS - move
-    RS - rotate
-    RT - shoot
-    Start - pause
-    LS click + RS click - self-destruction
+* _Gamepad_
+    * LS - move
+    * RS - rotate
+    * RT - shoot
+    * Start - pause
+    * LS click + RS click - self-destruction
         
 **2. Tetris**
-    
-    
-**3. Crosses and Zeros**
+
+Analog of the classic Tetris game. Your goal is to build full horizontal line.
+
+**Control**
+
+* _Keyboard_ | _Gamepad_
+    * UP | DPad UP - rotate
+    * DOWN | DPad DOWN - step passing
+    * LEFT, RIGHT | DPad LEFT \ RIGHT - move to side
+
+**3. Crosses**
+
+Classic Crosses game.
+
+**Opponent**
+* Player
+* Bot
 
 ## Getting Started
 
@@ -88,10 +102,9 @@ pip install pygame_menu
 
 ## Author
 
-### [**Derbin Dmitriy**](https://github.com/T1GIT)
-
-#### Student of the Financial University
-##### Group: PI19-5
+* [**Derbin Dmitriy**](https://github.com/T1GIT) - controls, ship, project structure, many improvements
+* [**Bakanov Artem**](https://github.com/Attilene) - meteors, rockets, colliding, game
+* [**Kurtaev Damir**](https://github.com/Amikuto) - menu, sound
 
 
 ## License

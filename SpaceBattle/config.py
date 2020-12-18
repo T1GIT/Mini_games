@@ -59,8 +59,6 @@ class Configuration:
         WEIGHT = 5
         POWER = 5
         RESIST = 0.05  # >= 0
-        SMOOTH = 10  # >= 1
-        ACCURACY = 10  # [1; 10]
         DEAD_SPEED = 0.2  # [0, 1)
         ANIM_SCALE = 2
 
@@ -68,13 +66,13 @@ class Configuration:
         MAX_SIZE = 200
         MIN_SIZE = 70
         SIZES = 3
-        MAX_LIFES = 3  # (Need Rocket.DESTROYABLE = True)
+        MAX_LIFES = 3  # (Needs Rocket.DESTROYABLE = True)
         MAX_SPEED = 3
         TELEPORT = True
         ROTATING = True
         MAX_ROTATE_SPEED = 4
         QUANTITY = 25
-        BY_TIME = True
+        BY_TIME = True  # (Needs Meteor.TELEPORT = True for value True)
         PERIOD = 700
         ON_FIELD = False
 
@@ -113,11 +111,19 @@ class Configuration:
             SFX = 3  # [0; 10]
 
     class Control:
-        MOUSE_BUTTONS = 3
-        STICK_SENSITIVITY = 2  # [1; 10]
-        STICK_DEAD_ZONE = 0.2  # [0; 1)
-        TRIGGER_DEAD_ZONE = 0.5  # [0; 1)
         ESC_PERIOD = 500  # ms
+
+        class Mouse:
+            BUTTONS = 3
+            ACCURACY = 10  # [1; 10]
+            SMOOTH = 10  # >= 1
+
+        class Stick:
+            SENSITIVITY = 5  # [1; 10]
+            DEAD_ZONE = 0.2  # [0; 1)
+
+        class Trigger:
+            DEAD_ZONE = 0.5  # [0; 1)
 
     class Rules:
         LIFES = 3
@@ -130,13 +136,13 @@ class Configuration:
     # Checking parameters
     assert 0 <= Ship.RESIST
     assert 0 < Ship.DEAD_SPEED < 1
-    assert Ship.SMOOTH >= 1
-    assert 1 <= Ship.ACCURACY <= 10
+    assert Control.Mouse.SMOOTH >= 1
+    assert 1 <= Control.Mouse.ACCURACY <= 10
     assert Meteor.MAX_SIZE >= Meteor.MIN_SIZE
     assert Rocket.SPEED > 0
-    assert 0 <= Control.STICK_SENSITIVITY <= 10
-    assert 0 <= Control.STICK_DEAD_ZONE < 1
-    assert 0 <= Control.TRIGGER_DEAD_ZONE < 1
+    assert 0 <= Control.Stick.SENSITIVITY <= 10
+    assert 0 <= Control.Stick.DEAD_ZONE < 1
+    assert 0 <= Control.Trigger.DEAD_ZONE < 1
     assert 0 <= Piece.MIN_OPACITY <= 100
     assert 0 <= Piece.MAX_OPACITY <= 100
     assert 1 <= Sound.Volume.GENERAL <= 10

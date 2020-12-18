@@ -5,7 +5,7 @@ from components.game import Game
 from config import Configuration as Conf
 from sprites.rocket import Rocket
 from sprites.ship import Ship
-from utils.listener.events import Event, Device as Dvs, Keyboard as Kb, Gamepad as Gp
+from utils.listener.events import Event, Device as Dvc, Keyboard as Kb, Gamepad as Gp
 from utils.mechanics.spawner import Spawner
 from utils.resources.image import Image as Img
 from utils.listener.listener import EventListener
@@ -201,7 +201,7 @@ class Menu:
         self.window.start()
 
     def event_handler(self, events: dict[str, set[Event]]):
-        for event in events[Dvs.KEYBOARD] | events[Dvs.GAMEPAD]:
+        for event in events[Dvc.KEYBOARD] | events[Dvc.GAMEPAD]:
             if (event.get_data() == Kb.Keys.ESC
                     or (event.get_type() == Gp.Events.KEY
                         and event.get_data() == Gp.Keys.START)):

@@ -44,7 +44,7 @@ class Window:
         self.comp_game.reset()
 
     def pause(self):
-        if time_ns() - self.esc_timer > Conf.Control.ESC_PERIOD * 1e6 and self.started:
+        if time_ns() - self.esc_timer > Conf.Control.ESC_PERIOD * 1e6:
             self.esc_timer = time_ns()
             self.open_menu()
 
@@ -54,7 +54,6 @@ class Window:
             self.close_menu()
 
     def open_menu(self):
-        if self.comp_game.game_over: self.started = False
         pg.mixer.stop()
         Snd.bg_menu()
         pg.event.set_grab(False)
