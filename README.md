@@ -26,7 +26,7 @@ Includes:
 ### Easy way
 
 1. Download archive from **releases**
-2. In the archive start _<game_name>/<game_name>.exe_
+2. In the archive start _<game_name>.exe_
 
 ### Using source files
 1. Install [Python](https://www.python.org/)
