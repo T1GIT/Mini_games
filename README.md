@@ -17,22 +17,24 @@ Pack of mini-games on Python
 Includes:
 **1. Space Battle**
 
-    Game with flying _asteroids_. You play as a _spaceship_, shooting _rockets_.
+Game with flying _asteroids_. You play as a _spaceship_, shooting _rockets_.
+
+**Control schemas:**
+
+1) _Keyboard_
+    * W, A, S, D, arrow keys - move
+    * Mouse - rotate
+    * Left Mouse Button - shoot
+    * Esc - pause
+    * Space - self-destruction
     
-    **Control schemas:**
+2) _Gamepad_
+    LS - move
+    RS - rotate
+    RT - shoot
+    Start - pause
+    LS click + RS click - self-destruction
         
-        1) _Keyboard_
-            W, A, S, D, arrow keys - moving
-            Mouse - rotating
-            Left Mouse Button - shoot
-            Esc - pause
-            Space - self-destruction
-        2) _Gamepad_
-            LS - moving
-            RS - rotating
-            RT - shoot
-            Start - pause
-            LS click + RS click - self-destruction
 **2. Tetris**
     
     
