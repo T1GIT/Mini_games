@@ -12,6 +12,9 @@
 
 <h1 align="center"> Mini-Games on Python </h1>
 
+
+## Description
+
 Pack of mini-games on Python
 
 Includes:
