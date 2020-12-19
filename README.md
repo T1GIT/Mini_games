@@ -1,6 +1,4 @@
-<h1 align="center">
-    Mini-Games
-</h1>
+<img src="https://github.com/T1GIT/T1GIT/raw/main/covers/Mini_Games.png">
 
 <h3 align="center"> |
     <a href="#Description"> Description </a> |
@@ -10,7 +8,9 @@
     <a href="#License"> License </a> |
 </h3> 
 
-## Description
+------------------------------------------------
+
+<h1 align="center"> Mini-Games on Python </h1>
 
 Pack of mini-games on Python
 

@@ -78,16 +78,17 @@ class Game:
         """
         x, y = 0, 0
         shoot = False
-        for event in events[Dvc.SYSTEM]:
+        kb_self_distract = [False, False]
+        gp_self_distract = [False, False]
+        for event in events.get(Dvc.SYSTEM, ()):
             if event.get_type() == Sys.Events.QUIT:
                 self.running = False
-        for event in events[Dvc.MOUSE]:
+        for event in events.get(Dvc.MOUSE, ()):
             if event.get_type() == Ms.Events.MOVE:
                 self.ship.rotate(*event.get_data(), True)
             if event.get_type() == Ms.Events.KEY and event.get_data() == Ms.Keys.LEFT:
                 shoot = True
-        kb_self_distract = [False, False]
-        for event in events[Dvc.KEYBOARD]:
+        for event in events.get(Dvc.KEYBOARD, ()):
             if event.get_data() in (Kb.Keys.W, Kb.Keys.UP):       y += 1
             if event.get_data() in (Kb.Keys.A, Kb.Keys.LEFT):     x -= 1
             if event.get_data() in (Kb.Keys.S, Kb.Keys.DOWN):     y -= 1
@@ -95,30 +96,31 @@ class Game:
             if event.get_data() == Kb.Keys.ESC: self.window.pause()
             if event.get_data() == Kb.Keys.SPACE: kb_self_distract[0] = True
             if event.get_data() == Kb.Keys.ENTER: kb_self_distract[1] = True
-        gp_self_distract = [False, False]
-        for event in events[Dvc.GAMEPAD]:
+        for event in events.get(Dvc.GAMEPAD, ()):
             if event.get_type() == Gp.Events.LS:    x, y = event.get_data()
             if event.get_type() == Gp.Events.RS:    self.ship.rotate(*event.get_data(), False)
             if event.get_type() == Gp.Events.KEY and event.get_data() == Gp.Keys.RT: shoot = True
             if event.get_type() == Gp.Events.KEY and event.get_data() == Gp.Keys.START: self.window.pause()
             if event.get_type() == Gp.Events.KEY and event.get_data() == Gp.Keys.LS: gp_self_distract[0] = True
             if event.get_type() == Gp.Events.KEY and event.get_data() == Gp.Keys.RS: gp_self_distract[1] = True
-        # Checking self-destruction
-        if kb_self_distract == [True, True] or gp_self_distract == [True, True]:
-            self.lose()
-        # Shooting
-        if shoot and not self.game_over and self.rocket_timer == 0:
-            self.rocket_timer = (Conf.System.FPS * Conf.Rocket.PERIOD) // 1000
-            self.ship.shoot()
-        # Moving
-        if (x, y) == (0, 0):    self.ship.brake()
-        else:                   self.ship.accelerate(x, y)
+        if not self.game_over:
+            # Checking self-destruction
+            if kb_self_distract == [True, True] or gp_self_distract == [True, True]:
+                self.lose()
+            # Shooting
+            if shoot and not self.game_over and self.rocket_timer == 0:
+                self.rocket_timer = (Conf.System.FPS * Conf.Rocket.PERIOD) // 1000
+                self.ship.shoot()
+            # Moving
+            if (x, y) == (0, 0):    self.ship.brake()
+            else:                   self.ship.accelerate(x, y)
 
     def mainloop(self):
         while self.running:
             self.window.screen.blit(self.image, self.image.get_rect())
-            if not self.game_over:
-                self.event_handler(EventListener.get_events())
+            events = EventListener.get_events()
+            if self.game_over: events = {Dvc.SYSTEM: events[Dvc.SYSTEM]}
+            self.event_handler(events)
             Group.ALL.update()
             Group.ALL.draw(self.window.screen)
             pg.display.update(Group.ALL.sprites())

@@ -13,7 +13,8 @@ class EventListener:
     they will be erasing in the same time.
     """
     _ms_keys = {0}
-    _kb_keys = {Kb.Keys.W, Kb.Keys.A, Kb.Keys.S, Kb.Keys.D, Kb.Keys.UP, Kb.Keys.DOWN, Kb.Keys.LEFT, Kb.Keys.RIGHT}
+    _kb_keys = {Kb.Keys.W, Kb.Keys.A, Kb.Keys.S, Kb.Keys.D, Kb.Keys.UP, Kb.Keys.DOWN,
+                Kb.Keys.LEFT, Kb.Keys.RIGHT, Kb.Keys.ENTER, Kb.Keys.SPACE, Kb.Keys.ESC}
     _gp_keys = {Gp.Keys.RT, Gp.Keys.START, Gp.Keys.LS, Gp.Keys.RS}
     _system = {Sys.Events.QUIT}
     _gamepad = None

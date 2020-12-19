@@ -37,11 +37,11 @@ class Collider:
         for meteor, rockets in touched.items():
             for rocket in rockets:
                 if Collider.collide_by_mask(meteor, rocket):
-                    Snd.ex_meteor()
                     if meteor.is_alive():
                         meteor.wound()
                         Animation.on_sprite("meteor", rocket, max(meteor.rect.size) / 2)
                     else:
+                        Snd.ex_meteor()
                         Animation.on_sprite("meteor", meteor, max(meteor.rect.size))
                         meteor.kill()
                         result += 1

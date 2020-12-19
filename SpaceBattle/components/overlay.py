@@ -57,6 +57,36 @@ class Overlay:
             self.need_update = True
             self.score += Conf.Overlay.Score.DELTA * points
 
+    class Framerate(pg.sprite.Sprite):
+        def __init__(self):
+            super().__init__()
+            self.font = pg.font.Font("resources/fonts/opensans.ttf", Conf.Overlay.Score.SIZE)
+            self.need_update = False
+            self.score = 0
+            self.image = self.font.render(str(self.score), True, Conf.Overlay.Score.COLOR)
+            self.image.set_alpha(Conf.Overlay.OPACITY)
+
+        def reset(self) -> None:
+            self.__init__()
+
+        def get_score(self) -> int:
+            return self.score
+
+        def show(self) -> None:
+            self.rect = self.image.get_rect(topright=(
+                Conf.Window.WIDTH - Conf.Overlay.Score.X_OFFSET, Conf.Overlay.Score.Y_OFFSET - 20))
+
+        def update(self) -> None:
+            if self.need_update:
+                self.image = self.font.render(str(self.score), True, Conf.Overlay.Score.COLOR)
+                self.image.set_alpha(Conf.Overlay.OPACITY)
+                self.show()
+                self.need_update = False
+
+        def up(self, points: int) -> None:
+            self.need_update = True
+            self.score += Conf.Overlay.Score.DELTA * points
+
     class Health(pg.sprite.Sprite):
         def __init__(self):
             super().__init__()
