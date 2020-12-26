@@ -1,6 +1,7 @@
 import pygame_menu
 import os.path
 
+from components.abstractComponent import AbstractComponent
 from components.game import Game
 from config import Configuration as Conf
 from sprites.rocket import Rocket
@@ -12,7 +13,7 @@ from utils.listener.listener import EventListener
 from utils.resources.sound import Sound as Snd
 
 
-class Menu:
+class Menu(AbstractComponent):
     def __init__(self, window):
         # Environment
         self.window = window
@@ -207,8 +208,11 @@ class Menu:
                         and event.get_data() == Gp.Keys.START)):
                 self.window.play()
 
-    def open(self):
+    def reset(self):
         self.menu_main = self.create_menu(self.menu_settings, self.menu_about)
+
+    def open(self):
+        self.reset()
         self.menu_main.mainloop(self.window.screen, fps_limit=Conf.System.FPS,
                                 bgfun=lambda: self.event_handler(EventListener.get_events()))
 

@@ -1,6 +1,7 @@
 import os
-import numpy as np
+import random as rnd
 
+import numpy as np
 import pygame as pg
 import pygame_menu
 
@@ -35,7 +36,7 @@ class Image:
         return Image._MENU
 
     @staticmethod
-    def get_ship(with_fire: bool) -> pg.image:
+    def get_ship(with_fire: bool) -> pg.Surface:
         if Image._SHIPS is None:
             Image._SHIPS = []
             for x in range(Image.SHIPS_AMOUNT):
@@ -46,7 +47,7 @@ class Image:
         return Image._SHIPS[Conf.Image.SHIP][1 if with_fire else 0]
 
     @staticmethod
-    def get_rocket() -> pg.image:
+    def get_rocket() -> pg.Surface:
         if Image._ROCKETS is None:
             Image._ROCKETS = []
             for x in range(Image.ROCKETS_AMOUNT):
@@ -55,21 +56,21 @@ class Image:
         return Image._ROCKETS[Conf.Image.ROCKET]
 
     @staticmethod
-    def get_life() -> pg.image:
+    def get_life() -> pg.Surface:
         if Image._LIFE is None:
             Image._LIFE = pg.image.load(
                 f"{Image._ROOT}/life/{Conf.Image.LIFE}.{Conf.Image.SPRITE_FORMAT}").convert_alpha()
         return Image._LIFE
 
     @staticmethod
-    def get_background() -> pg.image:
+    def get_background() -> pg.Surface:
         if Image._BACKGROUND is None:
             Image._BACKGROUND = pg.image.load(
                 f"{Image._ROOT}/bg/static/{Conf.Image.STATIC_BG}.{Conf.Image.BASIC_FORMAT}").convert()
         return Image._BACKGROUND
 
     @staticmethod
-    def get_meteors() -> [pg.image]:
+    def get_meteors() -> [pg.Surface]:
         if Image._METEORS is None:
             Image._METEORS = []
             path = f"{Image._ROOT}/meteor"
@@ -78,7 +79,7 @@ class Image:
         return Image._METEORS
 
     @staticmethod
-    def get_animation(name: str) -> [pg.image]:
+    def get_animation(name: str) -> [pg.Surface]:
         if name not in Image._ANIMATIONS:
             pack = []
             path = f"{Image._ROOT}/anim/{name}"
@@ -88,7 +89,7 @@ class Image:
         return Image._ANIMATIONS[name]
 
     @staticmethod
-    def get_pieces() -> [pg.image]:
+    def get_pieces() -> [pg.Surface]:
         if Image._PIECES is None:
             Image._PIECES = []
             path = f"{Image._ROOT}/piece"
@@ -108,8 +109,13 @@ class Image:
         Image.get_pieces()
 
     @staticmethod
-    def get_rotate_cache(raw_images: list[pg.image]) -> np.array:
-        result = np.reshape(len(raw_images), Conf.Meteor.SIZES, 181, dtype=pg.image)
+    def scale(texture: pg.Surface, size: float) -> pg.Surface:
+        width, height = map(lambda x: round(x * size / max(texture.get_size())), texture.get_size())
+        return pg.transform.scale(texture, (width, height))
+
+    @staticmethod
+    def get_rotate_cache(raw_images: list[pg.Surface]) -> np.array:
+        result = np.reshape(len(raw_images), Conf.Meteor.SIZES, 181, dtype=pg.Surface)
         # for i, img in enumerate(raw_images):
         #     for angle in range(90)
 

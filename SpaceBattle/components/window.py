@@ -4,6 +4,7 @@ from time import time_ns
 
 import pygame as pg
 
+from components.abstractComponent import AbstractComponent
 from components.game import Game
 from components.menu import Menu
 from config import Configuration as Conf
@@ -12,7 +13,7 @@ from utils.resources.sound import Sound as Snd
 from utils.resources.image import Image as Img
 
 
-class Window:
+class Window(AbstractComponent):
     """
     Class for show the main window.
     Initials the Game.

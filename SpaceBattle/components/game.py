@@ -1,6 +1,8 @@
 import pygame as pg
 
 from components.overlay import Overlay
+
+from components.abstractComponent import AbstractComponent
 from config import Configuration as Conf
 from sprites.animation import Animation
 from sprites.ship import Ship
@@ -13,7 +15,7 @@ from utils.resources.sound import Sound as Snd
 from utils.mechanics.spawner import Spawner
 
 
-class Game:
+class Game(AbstractComponent):
     """
     Class which initials the game.
     Spawns meteors.

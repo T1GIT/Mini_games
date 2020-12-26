@@ -52,7 +52,7 @@ class Configuration:
         MIN_SIZE = 100  # px
         MAX_SIZE = 300  # px
         MAX_SPEED = 1
-        QUANTITY = 0
+        QUANTITY = 10
 
     class Ship:
         SIZE = 100
@@ -77,7 +77,7 @@ class Configuration:
         ON_FIELD = False
 
     class Rocket:
-        SIZE = 10  # px
+        SIZE = 40  # px
         SPEED = 20  # > 0
         PERIOD = 200  # ms
         DESTROYABLE = True

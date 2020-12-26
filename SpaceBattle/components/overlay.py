@@ -1,12 +1,13 @@
 import pygame as pg
 from collections import deque
 
+from components.abstractComponent import AbstractComponent
 from config import Configuration as Conf
 from utils.tools.group import Group
 from utils.resources.image import Image as Img
 
 
-class Overlay:
+class Overlay(AbstractComponent):
     def __init__(self, game):
         self.game = game
         # Components
@@ -57,17 +58,14 @@ class Overlay:
             self.need_update = True
             self.score += Conf.Overlay.Score.DELTA * points
 
-    class Framerate(pg.sprite.Sprite):
+    class Framerate(pg.sprite.Sprite, AbstractComponent):
         def __init__(self):
             super().__init__()
             self.font = pg.font.Font("resources/fonts/opensans.ttf", Conf.Overlay.Score.SIZE)
-            self.need_update = False
+            self.needs_update = False
             self.score = 0
             self.image = self.font.render(str(self.score), True, Conf.Overlay.Score.COLOR)
             self.image.set_alpha(Conf.Overlay.OPACITY)
-
-        def reset(self) -> None:
-            self.__init__()
 
         def get_score(self) -> int:
             return self.score
@@ -77,17 +75,17 @@ class Overlay:
                 Conf.Window.WIDTH - Conf.Overlay.Score.X_OFFSET, Conf.Overlay.Score.Y_OFFSET - 20))
 
         def update(self) -> None:
-            if self.need_update:
+            if self.needs_update:
                 self.image = self.font.render(str(self.score), True, Conf.Overlay.Score.COLOR)
                 self.image.set_alpha(Conf.Overlay.OPACITY)
                 self.show()
-                self.need_update = False
+                self.needs_update = False
 
         def up(self, points: int) -> None:
-            self.need_update = True
+            self.needs_update = True
             self.score += Conf.Overlay.Score.DELTA * points
 
-    class Health(pg.sprite.Sprite):
+    class Health(pg.sprite.Sprite, AbstractComponent):
         def __init__(self):
             super().__init__()
             self.points: deque[pg.sprite.Sprite] = deque()
@@ -101,9 +99,6 @@ class Overlay:
                 point.image.set_alpha(Conf.Overlay.OPACITY)
                 self.points.append(point)
                 Group.ALL.add(point)
-
-        def reset(self) -> None:
-            self.__init__()
 
         def get_lifes(self) -> int:
             return len(self.points)
