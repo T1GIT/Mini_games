@@ -5,7 +5,7 @@ class Configuration:
     """
     class Window:
         TITLE = "Space Battle"
-        FULLSCREEN = False
+        FULLSCREEN = True
         WIDTH = 1000
         HEIGHT = 1000
 
@@ -58,10 +58,10 @@ class Configuration:
     class Piece:
         MIN_OPACITY = 60  # [0, 100]
         MAX_OPACITY = 90  # [0, 100]
-        MIN_SIZE = 100  # px
-        MAX_SIZE = 300  # px
+        MIN_SIZE = 200  # px
+        MAX_SIZE = 500  # px
         MAX_SPEED = 1
-        QUANTITY = 10
+        QUANTITY = 5
 
     class Ship:
         SIZE = 150
