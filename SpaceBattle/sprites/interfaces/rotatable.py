@@ -1,5 +1,6 @@
 import pygame as pg
 
+from config import Configuration as Conf
 from sprites.interfaces.movable import Movable
 
 
@@ -12,7 +13,7 @@ class Rotatable(Movable):
     def rotate(self) -> None:
         x_offset = self.pos_x - self.rect.x
         y_offset = self.pos_y - self.rect.y
-        self.angle = (self.angle + self.angle_speed) % 360
+        self.angle = (self.angle + self.angle_speed * Conf.System.SCALE) % 360
         self.image = pg.transform.rotate(self.texture, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
         self.pos_x = self.rect.x + x_offset

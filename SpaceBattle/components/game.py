@@ -8,6 +8,7 @@ from sprites.animation import Animation
 from sprites.ship import Ship
 from utils.mechanics.collider import Collider
 from utils.listener.events import Keyboard as Kb, Gamepad as Gp, Mouse as Ms, Device as Dvc, System as Sys, Event
+from utils.tools.debugger import Debugger
 from utils.tools.group import Group
 from utils.resources.image import Image as Img
 from utils.listener.listener import EventListener
@@ -36,6 +37,7 @@ class Game(AbstractComponent):
         self.meteor_timer = 0
         self.rocket_timer = 0
         self.losing_timer = 0
+        self.fps_timer = 0
         # Background
         bg = Img.get_background()
         w0, h0 = bg.get_size()
@@ -119,13 +121,13 @@ class Game(AbstractComponent):
 
     def mainloop(self):
         while self.running:
-            self.window.screen.blit(self.image, self.image.get_rect())
             events = EventListener.get_events()
             if self.game_over: events = {Dvc.SYSTEM: events[Dvc.SYSTEM]}
             self.event_handler(events)
             Group.ALL.update()
+            self.window.screen.blit(self.image, self.image.get_rect())
             Group.ALL.draw(self.window.screen)
-            pg.display.update(Group.ALL.sprites())
+            pg.display.flip()
             if self.game_over:
                 if self.losing_timer == 0:
                     self.window.reset()
@@ -154,7 +156,16 @@ class Game(AbstractComponent):
                 Spawner.meteor()
         else: Spawner.all_meteors()
         Spawner.all_pieces(False)
+        # Refreshing framerate
+        if self.fps_timer == 0 and Conf.Overlay.Framerate.VISIBLE:
+            self.fps_timer = Conf.Overlay.Framerate.DELTA // Conf.System.SCALE
+            self.comp_overlay.framerate.refresh()
         # Decrementing timers
         self.meteor_timer = max(0, self.meteor_timer - 1)
         self.rocket_timer = max(0, self.rocket_timer - 1)
+        self.fps_timer = max(0, self.fps_timer - 1)
 
+    @staticmethod
+    def change_fps(value: int):
+        Conf.System.FPS = value
+        Conf.System.SCALE = Conf.System.GAME_SPEED / value

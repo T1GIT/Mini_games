@@ -16,8 +16,8 @@ class Piece(Movable):
         texture.set_alpha(rnd.randint(Conf.Piece.MIN_OPACITY, Conf.Piece.MAX_OPACITY))
         super().__init__(
             texture=texture,
-            speed_x=rnd.uniform(-cnf.MAX_SPEED, Conf.Meteor.MAX_SPEED) * Conf.System.SCALE,
-            speed_y=rnd.uniform(-cnf.MAX_SPEED, Conf.Meteor.MAX_SPEED) * Conf.System.SCALE
+            speed_x=rnd.uniform(-cnf.MAX_SPEED, Conf.Meteor.MAX_SPEED),
+            speed_y=rnd.uniform(-cnf.MAX_SPEED, Conf.Meteor.MAX_SPEED)
         )
 
     def update(self):

@@ -3,6 +3,7 @@ import os.path
 
 from components.abstractComponent import AbstractComponent
 from components.game import Game
+from components.overlay import Overlay
 from config import Configuration as Conf
 from sprites.rocket import Rocket
 from sprites.ship import Ship
@@ -87,68 +88,72 @@ class Menu(AbstractComponent):
         )
 
         # Layout
-        menu.add_label(
-            "Game settings"
+        menu.add_label("FPS")
+        menu.add_selector(
+            f'Limit:  ', items=[
+                ("30", 30),
+                ("60", 60),
+                ("90", 90),
+                ("120", 120)
+            ], font_color=Conf.Menu.FONT_COLOR,
+            default=Conf.System.FPS // 30 - 1,
+            onchange=lambda _, value: Game.change_fps(value)
         )
         menu.add_selector(
-            f'Meteor spawn:  ',
-            items=[
+            f'Show:  ', items=[
+                ("No", False),
+                ("Yes", True)
+            ], font_color=Conf.Menu.FONT_COLOR,
+            default=1 if Conf.Overlay.Framerate.VISIBLE else 0,
+            onchange=lambda _, value: Overlay.fps_toggle(value)
+        )
+        menu.add_label("Game settings")
+        menu.add_selector(
+            f'Meteor spawn:  ', items=[
                 ("static", False),
                 ("dynamic", True)
-            ],
-            font_color=(0, 0, 0),
+            ], font_color=Conf.Menu.FONT_COLOR,
             default=1 if Conf.Meteor.BY_TIME else 0,
             onchange=lambda _, value: Spawner.change_spawn_mode(value)
         )
         menu.add_selector(
             f'Difficulty:  ',
             items=Conf.Game.DIFFICULTY,
-            default=2,
-            font_color=(0, 0, 0),
+            default=2, font_color=Conf.Menu.FONT_COLOR,
             onchange=lambda _, value: Spawner.change_difficulty(value)
         )
-        menu.add_label(
-            "Textures"
-        )
+        menu.add_label("Textures")
         menu.add_selector(
             f'Ship:  ',
             items=[(str(i), i) for i in range(Img.SHIPS_AMOUNT)],
-            font_color=(0, 0, 0),
-            default=Conf.Image.SHIP,
+            default=Conf.Image.SHIP, font_color=Conf.Menu.FONT_COLOR,
             onchange=lambda _, value: Ship.set_texture(value)
         )
         menu.add_selector(
             f'Rocket:  ',
             items=[(str(i), i) for i in range(Img.ROCKETS_AMOUNT)],
-            default=Conf.Image.ROCKET,
-            font_color=(0, 0, 0),
+            default=Conf.Image.ROCKET, font_color=Conf.Menu.FONT_COLOR,
             onchange=lambda _, value: Rocket.set_texture(value)
         )
-        menu.add_label(
-            "Volume"
-        )
+        menu.add_label("Volume")
         menu.add_selector(
             f'General:  ',
             items=[(str(i), i) for i in range(0, 11)],
-            font_color=(0, 0, 0),
-            default=Conf.Sound.Volume.GENERAL,
+            default=Conf.Sound.Volume.GENERAL, font_color=Conf.Menu.FONT_COLOR,
             onchange=lambda _, value: Snd.Volume.set_general(value)
         )
         menu.add_selector(
             f'Background:  ',
             items=[(str(i), i) for i in range(0, 11)],
-            font_color=(0, 0, 0),
-            default=Conf.Sound.Volume.BG,
+            default=Conf.Sound.Volume.BG, font_color=Conf.Menu.FONT_COLOR,
             onchange=lambda _, value: Snd.Volume.set_bg(value)
         )
         menu.add_selector(
             f'SFX:  ',
             items=[(str(i), i) for i in range(0, 11)],
-            font_color=(0, 0, 0),
-            default=Conf.Sound.Volume.SFX,
+            default=Conf.Sound.Volume.SFX, font_color=Conf.Menu.FONT_COLOR,
             onchange=lambda _, value: Snd.Volume.set_sfx(value)
         )
-
         return menu
 
     def create_menu(self, settings, about):
@@ -158,7 +163,6 @@ class Menu(AbstractComponent):
         A name entry line is added, a play button that redirects to the start function of the game,
         similarly with the about and exit buttons.
         """
-
         # Theme
         theme = pygame_menu.themes.Theme(
             selection_color=Conf.Menu.THEME_COLOR,
@@ -174,7 +178,6 @@ class Menu(AbstractComponent):
             widget_margin=(0, 40),
             menubar_close_button=False
         )
-
         # Initialisation
         menu = pygame_menu.Menu(
             Conf.Window.HEIGHT,
@@ -184,18 +187,15 @@ class Menu(AbstractComponent):
             onclose=lambda: pygame_menu.events.DISABLE_CLOSE,
             mouse_motion_selection=True
         )
-
         # Layout
         menu.add_button('     Play     ', self.window.start, font_size=60, margin=(0, 50))
         menu.add_button('   Settings   ', settings)
         menu.add_button('     Info     ', about)
         menu.add_button('     Exit     ', lambda: exit(69))
-
         # Sound
         self.engine.set_sound(pygame_menu.sound.SOUND_TYPE_CLICK_MOUSE, Snd.click(),
                               volume=Snd.get_volume(Conf.Sound.Volume.SFX))
         menu.set_sound(self.engine, recursive=True)
-
         return menu
 
     def start(self):
@@ -213,8 +213,7 @@ class Menu(AbstractComponent):
 
     def open(self):
         self.reset()
-        self.menu_main.mainloop(self.window.screen, fps_limit=Conf.System.FPS,
-                                bgfun=lambda: self.event_handler(EventListener.get_events()))
+        self.menu_main.mainloop(self.window.screen, bgfun=lambda: self.event_handler(EventListener.get_events()))
 
     def close(self):
         self.menu_main.disable()

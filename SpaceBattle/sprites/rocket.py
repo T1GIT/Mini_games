@@ -26,8 +26,8 @@ class Rocket(Movable, TextureUpdatable):
         rad = radians(deg)
         self.start_x, self.start_y = x, y
         self.set_speed(
-            x=Conf.Rocket.SPEED * cos(rad) * Conf.System.SCALE,
-            y=Conf.Rocket.SPEED * sin(rad) * Conf.System.SCALE
+            x=Conf.Rocket.SPEED * cos(rad),
+            y=Conf.Rocket.SPEED * sin(rad)
         )
         self.image = pg.transform.rotate(self.texture, -deg)
         self.locate(x, y)

@@ -22,6 +22,14 @@ class Configuration:
     class Overlay:
         OPACITY = 90
 
+        class Framerate:
+            VISIBLE = True
+            SIZE = 60
+            COLOR = (255, 30, 30)
+            X_OFFSET = 200
+            Y_OFFSET = 5
+            DELTA = 20
+
         class Score:
             SIZE = 64
             COLOR = (100, 255, 100)
@@ -40,6 +48,7 @@ class Configuration:
         AUTHORS = "Damir", "Artem", "Dmitriy"
         CONTACTS = ""
         THEME_COLOR = (0, 250, 0)
+        FONT_COLOR = (0, 0, 0)
 
         class Title:
             X_OFFSET = 40
@@ -55,7 +64,7 @@ class Configuration:
         QUANTITY = 10
 
     class Ship:
-        SIZE = 100
+        SIZE = 150
         WEIGHT = 5
         POWER = 5
         RESIST = 0.05  # >= 0
@@ -71,10 +80,11 @@ class Configuration:
         TELEPORT = True
         ROTATING = True
         MAX_ROTATE_SPEED = 4
-        QUANTITY = 25
+        QUANTITY = 0
         BY_TIME = True  # (Needs Meteor.TELEPORT = True for value True)
         PERIOD = 700
         ON_FIELD = False
+        DECREASE_SIZE = False
 
     class Rocket:
         SIZE = 40  # px

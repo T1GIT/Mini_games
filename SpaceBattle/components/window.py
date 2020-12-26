@@ -76,6 +76,6 @@ class Window(AbstractComponent):
         self.comp_game.start()
 
     def show(self):
-        Thread(target=lambda: (pg.time.delay(100), Img.cache())).start()
+        Img.cache()
         Snd.bg_menu()
         self.comp_menu.open()

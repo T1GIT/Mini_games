@@ -87,7 +87,8 @@ class Ship(Movable, TextureUpdatable):
         elif d_deg < -180: d_deg += 360
         if (not smooth) or abs(d_deg) > self._accuracy * Conf.System.SCALE:
             self.angle += (d_deg / Conf.Control.Mouse.SMOOTH * Conf.System.SCALE) if smooth else d_deg
-            self.image = pg.transform.rotate(self.texture, self.angle - 90)
+            self.image = pg.transform.rotate(
+                self.texture_fire if self.with_fire else self.texture_normal, self.angle - 90)
             self.rect = self.image.get_rect(center=self.rect.center)
             self.pos_x, self.pos_y = self.rect.x, self.rect.y
             if self.angle > 180: self.angle -= 360

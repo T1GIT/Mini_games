@@ -70,12 +70,21 @@ class Image:
         return Image._BACKGROUND
 
     @staticmethod
-    def get_meteors() -> [pg.Surface]:
+    def get_meteors():
         if Image._METEORS is None:
-            Image._METEORS = []
+            pack = []
             path = f"{Image._ROOT}/meteor"
             for x in range(Image._METEORS_AMOUNT):
-                Image._METEORS.append(pg.image.load(f"{path}/{x}.{Conf.Image.SPRITE_FORMAT}").convert_alpha())
+                pack.append(pg.image.load(f"{path}/{x}.{Conf.Image.SPRITE_FORMAT}").convert_alpha())
+            size_del = (Conf.Meteor.MAX_SIZE - Conf.Meteor.MIN_SIZE) / Conf.Meteor.SIZES
+            Image._METEORS = np.zeros((Image._METEORS_AMOUNT, Conf.Meteor.SIZES, 181), dtype=pg.Surface)
+            for i, img in enumerate(pack):
+                img_ar = Image._METEORS[i]
+                for size in range(Conf.Meteor.SIZES):
+                    size_ar = img_ar[size]
+                    scaled_img = Image.scale(img, Conf.Meteor.MIN_SIZE + size_del * size)
+                    for angle in range(181):
+                        size_ar[angle] = pg.transform.rotate(scaled_img, angle)
         return Image._METEORS
 
     @staticmethod
@@ -112,26 +121,3 @@ class Image:
     def scale(texture: pg.Surface, size: float) -> pg.Surface:
         width, height = map(lambda x: round(x * size / max(texture.get_size())), texture.get_size())
         return pg.transform.scale(texture, (width, height))
-
-    @staticmethod
-    def get_rotate_cache(raw_images: list[pg.Surface]) -> np.array:
-        result = np.reshape(len(raw_images), Conf.Meteor.SIZES, 181, dtype=pg.Surface)
-        # for i, img in enumerate(raw_images):
-        #     for angle in range(90)
-
-    @staticmethod
-    def get_by_angle(cache, angle):
-        pass
-
-
-    # __cache = __ca
-    # for raw_image in Img.get_meteors():
-    #     cnf = Conf.Meteor
-    #     w0, h0 = raw_image.get_size()
-    #     size = rnd.randint(cnf.MIN_SIZE, cnf.MAX_SIZE)
-    #     scale = size / max(w0, h0)
-    #     w1, h1 = map(lambda x: round(x * Meteor.scale), [w0, h0])
-    #     scaled = pg.transform.scale(raw_image, (w1, h1))
-    #     __cache.append(
-    #         [pg.transform.flip(raw_image)]
-    #     )
