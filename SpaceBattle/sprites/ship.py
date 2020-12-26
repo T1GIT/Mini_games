@@ -104,6 +104,12 @@ class Ship(Movable, TextureUpdatable):
         Snd.shoot()
         rocket.add(Group.ROCKETS, Group.ALL)
 
+    def update_texture(self, raw_texture: pg.Surface, size: float) -> None:
+        self.texture = Img.scale(raw_texture, size)
+        self.image = self.texture
+        self.texture_normal = Img.scale(Img.get_ship(False), size)
+        self.texture_fire = Img.scale(Img.get_ship(True), size)
+
     def _wear_fire(self, with_fire: bool):
         if with_fire != self.with_fire:
             self.with_fire = with_fire

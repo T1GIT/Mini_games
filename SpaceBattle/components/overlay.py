@@ -51,7 +51,7 @@ class Overlay(AbstractComponent):
 
         def show(self) -> None:
             self.rect = self.image.get_rect(topright=(
-                Conf.Window.WIDTH - Conf.Overlay.Score.X_OFFSET, Conf.Overlay.Score.Y_OFFSET - 20))
+                Conf.Window.WIDTH - Conf.Overlay.Score.X_OFFSET, Conf.Overlay.Score.Y_OFFSET))
 
         def update(self) -> None:
             if self.need_update:
@@ -63,42 +63,6 @@ class Overlay(AbstractComponent):
         def up(self, points: int) -> None:
             self.need_update = True
             self.score += Conf.Overlay.Score.DELTA * points
-
-    class Framerate(pg.sprite.Sprite, AbstractComponent):
-        def __init__(self):
-            super().__init__()
-            self.font = pg.font.Font("resources/fonts/opensans.ttf", Conf.Overlay.Framerate.SIZE)
-            self.needs_update = False
-            self.visible = Conf.Overlay.Framerate.VISIBLE
-            self.value = 0
-            self.period = 0
-            self.image = self.font.render("", True, Conf.Overlay.Framerate.COLOR)
-            self.image.set_alpha(Conf.Overlay.OPACITY)
-
-        def get(self) -> int:
-            return self.value
-
-        def show(self) -> None:
-            self.rect = self.image.get_rect(topright=(
-                Conf.Window.WIDTH - Conf.Overlay.Framerate.X_OFFSET, Conf.Overlay.Framerate.Y_OFFSET - 20))
-
-        def update(self) -> None:
-            if self.visible:
-                if not Conf.Overlay.Framerate.VISIBLE:
-                    self.image.set_alpha(0)
-                elif self.needs_update:
-                    self.image = self.font.render(str(self.value), True, Conf.Overlay.Framerate.COLOR)
-                    self.image.set_alpha(Conf.Overlay.OPACITY)
-                    self.show()
-                    self.needs_update = False
-            elif Conf.Overlay.Framerate.VISIBLE:
-                self.visible = True
-
-        def refresh(self):
-            if self.period != 0:
-                self.value = round(1e9 / ((time_ns() - self.period) / Conf.Overlay.Framerate.DELTA) / Conf.System.SCALE)
-                self.needs_update = True
-            self.period = time_ns()
 
     class Health(pg.sprite.Sprite, AbstractComponent):
         def __init__(self):
@@ -133,3 +97,39 @@ class Overlay(AbstractComponent):
     @staticmethod
     def fps_toggle(value):
         Conf.Overlay.Framerate.VISIBLE = value
+
+    class Framerate(pg.sprite.Sprite, AbstractComponent):
+        def __init__(self):
+            super().__init__()
+            self.font = pg.font.Font("resources/fonts/opensans.ttf", Conf.Overlay.Framerate.SIZE)
+            self.needs_update = False
+            self.visible = Conf.Overlay.Framerate.VISIBLE
+            self.value = 0
+            self.period = 0
+            self.image = self.font.render("", True, Conf.Overlay.Framerate.COLOR)
+            self.image.set_alpha(Conf.Overlay.OPACITY)
+
+        def get(self) -> int:
+            return self.value
+
+        def show(self) -> None:
+            self.rect = self.image.get_rect(bottomright=(
+                Conf.Window.WIDTH - Conf.Overlay.Framerate.X_OFFSET, Conf.Window.HEIGHT - Conf.Overlay.Framerate.Y_OFFSET))
+
+        def update(self) -> None:
+            if self.visible:
+                if not Conf.Overlay.Framerate.VISIBLE:
+                    self.image.set_alpha(0)
+                elif self.needs_update:
+                    self.image = self.font.render(str(self.value), True, Conf.Overlay.Framerate.COLOR)
+                    self.image.set_alpha(Conf.Overlay.OPACITY)
+                    self.show()
+                    self.needs_update = False
+            elif Conf.Overlay.Framerate.VISIBLE:
+                self.visible = True
+
+        def refresh(self):
+            if self.period != 0:
+                self.value = round(1e9 / ((time_ns() - self.period) / Conf.Overlay.Framerate.DELTA) / Conf.System.SCALE)
+                self.needs_update = True
+            self.period = time_ns()

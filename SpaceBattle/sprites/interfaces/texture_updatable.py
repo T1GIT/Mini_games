@@ -1,8 +1,9 @@
+from abc import ABC, abstractmethod
+
 import pygame as pg
 
-from abc import ABC, abstractmethod
-from utils.resources.image import Image as Img
 from sprites.interfaces.sprite import Sprite
+from utils.resources.image import Image as Img
 
 
 class TextureUpdatable(Sprite, ABC):

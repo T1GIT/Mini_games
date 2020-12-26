@@ -5,7 +5,7 @@ class Configuration:
     """
     class Window:
         TITLE = "Space Battle"
-        FULLSCREEN = True
+        FULLSCREEN = False
         WIDTH = 1000
         HEIGHT = 1000
 
@@ -26,15 +26,15 @@ class Configuration:
             VISIBLE = True
             SIZE = 60
             COLOR = (255, 30, 30)
-            X_OFFSET = 200
-            Y_OFFSET = 5
+            X_OFFSET = 10
+            Y_OFFSET = -5
             DELTA = 20
 
         class Score:
             SIZE = 64
             COLOR = (100, 255, 100)
             X_OFFSET = 10
-            Y_OFFSET = 5
+            Y_OFFSET = -15
             DELTA = 100
 
         class Health:
@@ -158,3 +158,4 @@ class Configuration:
     assert 1 <= Sound.Volume.GENERAL <= 10
     assert 1 <= Sound.Volume.SFX <= 10
     assert 1 <= Sound.Volume.BG <= 10
+    assert Animation.FPS <= System.FPS
