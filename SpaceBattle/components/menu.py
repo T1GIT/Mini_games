@@ -199,7 +199,7 @@ class Menu(AbstractComponent):
         return menu
 
     def start(self):
-        self.window.start()
+        self.window.set()
 
     def event_handler(self, events: dict[str, set[Event]]):
         for event in events[Dvc.KEYBOARD] | events[Dvc.GAMEPAD]:

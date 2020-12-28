@@ -1,11 +1,11 @@
 import random as rnd
 
 from config import Configuration as Conf
-from sprites.interfaces.movable import Movable
+from sprites.interfaces.bound import Bound
 from utils.resources.image import Image as Img
 
 
-class Piece(Movable):
+class Piece(Bound.Killable):
     """
     Class of the moving Pieces background
     Moves all the time
@@ -21,7 +21,5 @@ class Piece(Movable):
         )
 
     def update(self):
-        self.move()
-        if (self.rect.left > Conf.Window.WIDTH or self.rect.right < 0
-                or self.rect.top > Conf.Window.HEIGHT or self.rect.bottom < 0):
-            self.kill()
+        super().move()
+        super().bound_kill()

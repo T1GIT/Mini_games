@@ -79,7 +79,7 @@ class Window(tk.Tk):
                         fld.right()
                 elif event_name == 'up':
                     if fld.can_rotate():
-                        fld.rotate()
+                        fld.vector_rotate()
                 elif event_name == 'down':
                     if fld.can_move():
                         fld.step()

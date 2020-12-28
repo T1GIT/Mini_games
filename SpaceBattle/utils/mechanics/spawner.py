@@ -11,7 +11,7 @@ class Spawner:
         while len(Group.PIECES) < Conf.Piece.QUANTITY:
             piece = Piece()
             if on_field:
-                piece.locate(*Spawner.GetCoord.get_on_field())
+                piece.locate(*Spawner.GetCoord.get_on_field(Conf.Piece.MAX_SIZE))
             else:
                 piece.locate(*Spawner.GetCoord.get_out_field(Conf.Piece.MAX_SIZE))
             piece.add(Group.PIECES, Group.ALL)
@@ -31,7 +31,7 @@ class Spawner:
         """
         meteor = Meteor()
         if Conf.Meteor.ON_FIELD:
-            meteor.locate(*Spawner.GetCoord.get_on_field())
+            meteor.locate(*Spawner.GetCoord.get_on_field(Conf.Meteor.MAX_SIZE))
         else:
             meteor.locate(*Spawner.GetCoord.get_out_field(Conf.Meteor.MAX_SIZE))
         meteor.add(Group.METEORS, Group.ALL)
@@ -47,13 +47,13 @@ class Spawner:
 
     class GetCoord:
         @staticmethod
-        def get_on_field():
+        def get_on_field(offset: float):
             """
             Get coordinates on field
             :return: horizontally and vertically position
             """
-            x = rnd.uniform(0, Conf.Window.WIDTH)
-            y = rnd.uniform(0, Conf.Window.HEIGHT)
+            x = rnd.uniform(0 + offset, Conf.Window.WIDTH - offset)
+            y = rnd.uniform(0 + offset, Conf.Window.HEIGHT - offset)
             return x, y
 
         @staticmethod

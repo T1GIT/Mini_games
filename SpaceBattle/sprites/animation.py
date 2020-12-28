@@ -3,9 +3,10 @@ from collections import deque
 import pygame as pg
 
 from config import Configuration as Conf
-from sprites.interfaces.locatable import Locatable
+from sprites.interfaces.basic import Locatable
 from utils.tools.group import Group
 from utils.resources.image import Image as Img
+from utils.tools.timer import Timer
 
 
 class Animation(Locatable):
@@ -16,16 +17,16 @@ class Animation(Locatable):
     def __init__(self, name: str, size: int = Conf.Animation.DEFAULT_SIZE):
         self.frames = deque(map(lambda x: Img.scale(x, size), Img.get_animation(name)))
         super().__init__(texture=self.frames.popleft())
-        self.skipped = 1
+        self.frame_timer = Timer()
 
     def update(self):
-        if self.skipped % (Conf.System.FPS // Conf.Animation.FPS) == 0:
+        if self.frame_timer.tick():
+            self.frame_timer.set(Conf.System.FPS // Conf.Animation.FPS)
             if len(self.frames) > 0:
                 self.image = self.frames.popleft()
                 self.rect = self.image.get_rect(center=self.rect.center)
             else:
                 self.kill()
-        self.skipped += 1
 
     @staticmethod
     def on_sprite(name: str, sprite: pg.sprite.Sprite, size: int):

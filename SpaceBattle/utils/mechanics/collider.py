@@ -3,6 +3,7 @@ import pygame as pg
 from config import Configuration as Conf
 from sprites.animation import Animation
 from sprites.meteor import Meteor
+from sprites.rocket import Rocket
 from sprites.ship import Ship
 from utils.tools.group import Group
 from utils.resources.sound import Sound as Snd
@@ -31,9 +32,8 @@ class Collider:
         Checks the collision of a meteor and a rocket.
         Causes an explosion animation if a collision occurs
         """
-        touched = pg.sprite.groupcollide(Group.METEORS, Group.ROCKETS, False, False)
+        touched: dict[Meteor, list[Rocket]] = pg.sprite.groupcollide(Group.METEORS, Group.ROCKETS, False, False)
         result = 0
-        meteor: Meteor
         for meteor, rockets in touched.items():
             for rocket in rockets:
                 if Collider.collide_by_mask(meteor, rocket):

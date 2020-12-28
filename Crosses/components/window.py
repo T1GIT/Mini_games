@@ -60,4 +60,4 @@ class Window(tk.Tk):
     def start(self, is_bot):
         self.started = True
         self.comp_menu.hide()
-        self.comp_game.start(is_bot)
+        self.comp_game.set(is_bot)

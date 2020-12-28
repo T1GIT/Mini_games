@@ -135,4 +135,4 @@ class Button(tk.Button):
         self.pack(side=tk.BOTTOM, pady=Conf.WIN_HEIGHT // 20)
 
     def click(self):
-        self.master.master.start()
+        self.master.master.set()

@@ -163,14 +163,14 @@ class ComponentMenu(tk.Frame):
                                  relief=Conf.RELIEF, bg=Conf.MENU_BTN_CLR, fg=Conf.TEXT_CLR,
                                  activebackground=Conf.ACT_MENU_BTN_CLR, activeforeground=Conf.ACT_TEXT_CLR,
                                  height=Conf.BTN_HEIGHT, width=self.master.btn_width,
-                                 command=lambda: self.master.start(True),
+                                 command=lambda: self.master.set(True),
                                  image=self.master.pixel, compound=tk.CENTER,
                                  font=(Conf.FONT, Conf.BTN_TEXT_SIZE))
         self.btn_player = tk.Button(master=self, text="PLAYER",
                                     relief=Conf.RELIEF, bg=Conf.MENU_BTN_CLR, fg=Conf.TEXT_CLR,
                                     activebackground=Conf.ACT_MENU_BTN_CLR, activeforeground=Conf.ACT_TEXT_CLR,
                                     height=Conf.BTN_HEIGHT, width=self.master.btn_width,
-                                    command=lambda: self.master.start(False),
+                                    command=lambda: self.master.set(False),
                                     image=self.master.pixel, compound=tk.CENTER,
                                     font=(Conf.FONT, Conf.BTN_TEXT_SIZE))
         self.lbl_start.grid(row=0, columnspan=2, pady=Conf.PADDING, padx=Conf.PADDING)

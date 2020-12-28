@@ -3,9 +3,14 @@ class Configuration:
     Class containing settings of the components
     Don't require creating object
     """
+    class System:
+        FPS = 60
+        GAME_SPEED = 60
+        SCALE = GAME_SPEED / FPS
+
     class Window:
         TITLE = "Space Battle"
-        FULLSCREEN = True
+        FULLSCREEN = False
         WIDTH = 1000
         HEIGHT = 1000
 
@@ -130,18 +135,14 @@ class Configuration:
 
         class Stick:
             SENSITIVITY = 5  # [1; 10]
-            DEAD_ZONE = 0.2  # [0; 1)
+            L_DEAD_ZONE = 0.2  # [0; 1)
+            R_DEAD_ZONE = 0.2  # [0; 1)
 
         class Trigger:
             DEAD_ZONE = 0.5  # [0; 1)
 
     class Rules:
         LIFES = 3
-
-    class System:
-        FPS = 60
-        GAME_SPEED = 60
-        SCALE = GAME_SPEED / FPS
 
     # Checking parameters
     assert 0 <= Ship.RESIST
@@ -151,7 +152,8 @@ class Configuration:
     assert Meteor.MAX_SIZE >= Meteor.MIN_SIZE
     assert Rocket.SPEED > 0
     assert 0 <= Control.Stick.SENSITIVITY <= 10
-    assert 0 <= Control.Stick.DEAD_ZONE < 1
+    assert 0 <= Control.Stick.L_DEAD_ZONE < 1
+    assert 0 <= Control.Stick.R_DEAD_ZONE < 1
     assert 0 <= Control.Trigger.DEAD_ZONE < 1
     assert 0 <= Piece.MIN_OPACITY <= 100
     assert 0 <= Piece.MAX_OPACITY <= 100

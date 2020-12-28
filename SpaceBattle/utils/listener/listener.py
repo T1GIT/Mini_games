@@ -1,4 +1,4 @@
-from math import pow
+from math import pow, hypot
 
 import pygame as pg
 
@@ -87,23 +87,22 @@ class EventListener:
             for btn_num in EventListener._gp_keys:
                 if EventListener._gamepad.get_button(btn_num):
                     events.add(Event(Gp.Events.KEY, btn_num))
-            x, y = EventListener._get_stick_axis(EventListener._gamepad, 0, 1)
+            x, y = EventListener.get_stick_axis(EventListener._gamepad, Conf.Control.Stick.L_DEAD_ZONE, 0, 1)
             if (x, y) != (0, 0):
                 events.add(Event(Gp.Events.LS, (x, -y)))
-            x, y = EventListener._get_stick_axis(EventListener._gamepad, 3, 4)
+            x, y = EventListener.get_stick_axis(EventListener._gamepad, Conf.Control.Stick.R_DEAD_ZONE, 3, 4)
             if (x, y) != (0, 0):
                 events.add(Event(Gp.Events.RS, (x, -y)))
-            if EventListener._gamepad.get_axis(5) > Conf.Control.Trigger.DEAD_ZONE:
+            if (EventListener._gamepad.get_axis(5) + 1) / 2 > Conf.Control.Trigger.DEAD_ZONE:
                 events.add(Event(Gp.Events.KEY, Gp.Keys.RT))
         return events
 
     @staticmethod
-    def _get_stick_axis(gamepad: pg.joystick.Joystick, *axis_list) -> list[float]:
+    def get_stick_axis(gamepad: pg.joystick.Joystick, dead_zone: float, *axis_list: int) -> list[float]:
         out: list[float] = []
         for axis in axis_list:
-            out_axis = 0
             pos = gamepad.get_axis(axis)
-            if abs(pos) > Conf.Control.Stick.DEAD_ZONE:
-                out_axis = pow(abs(pos), EventListener._stick_sens) * (-1 if pos < 0 else 1)
-            out.append(out_axis)
+            out.append(pow(abs(pos), EventListener._stick_sens) * (-1 if pos < 0 else 1))
+        if hypot(*out) < dead_zone:
+            out = [0] * len(axis_list)
         return out

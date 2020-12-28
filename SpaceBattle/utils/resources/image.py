@@ -1,5 +1,6 @@
 import os
 import random as rnd
+from threading import Thread
 
 import numpy as np
 import pygame as pg
@@ -47,6 +48,17 @@ class Image:
         return Image._SHIPS[Conf.Image.SHIP][1 if with_fire else 0]
 
     @staticmethod
+    def get_meteors():
+        if Image._METEORS is None:
+            pack = []
+            path = f"{Image._ROOT}/meteor"
+            for x in range(Image._METEORS_AMOUNT):
+                pack.append(pg.image.load(f"{path}/{x}.{Conf.Image.SPRITE_FORMAT}").convert_alpha())
+            cnf = Conf.Meteor
+            Image._METEORS = Image.get_cache_angles(pack, list(np.linspace(cnf.MIN_SIZE, cnf.MAX_SIZE, cnf.SIZES)))
+        return Image._METEORS
+
+    @staticmethod
     def get_rocket() -> pg.Surface:
         if Image._ROCKETS is None:
             Image._ROCKETS = []
@@ -70,24 +82,6 @@ class Image:
         return Image._BACKGROUND
 
     @staticmethod
-    def get_meteors():
-        if Image._METEORS is None:
-            pack = []
-            path = f"{Image._ROOT}/meteor"
-            for x in range(Image._METEORS_AMOUNT):
-                pack.append(pg.image.load(f"{path}/{x}.{Conf.Image.SPRITE_FORMAT}").convert_alpha())
-            size_del = (Conf.Meteor.MAX_SIZE - Conf.Meteor.MIN_SIZE) / Conf.Meteor.SIZES
-            Image._METEORS = np.zeros((Image._METEORS_AMOUNT, Conf.Meteor.SIZES, 181), dtype=pg.Surface)
-            for i, img in enumerate(pack):
-                img_ar = Image._METEORS[i]
-                for size in range(Conf.Meteor.SIZES):
-                    size_ar = img_ar[size]
-                    scaled_img = Image.scale(img, Conf.Meteor.MIN_SIZE + size_del * size)
-                    for angle in range(181):
-                        size_ar[angle] = pg.transform.rotate(scaled_img, angle)
-        return Image._METEORS
-
-    @staticmethod
     def get_animation(name: str) -> [pg.Surface]:
         if name not in Image._ANIMATIONS:
             pack = []
@@ -107,15 +101,37 @@ class Image:
         return Image._PIECES
 
     @staticmethod
-    def cache():
-        Image.get_menu()
-        Image.get_ship(True)
-        Image.get_rocket()
-        Image.get_life()
-        Image.get_background()
-        Image.get_meteors()
-        Image.get_animation("ship")
-        Image.get_pieces()
+    def preload():
+        def preload_inside():
+            Image.get_menu()
+            Image.get_ship(True)
+            Image.get_rocket()
+            Image.get_life()
+            Image.get_background()
+            Image.get_meteors()
+            Image.get_animation("ship")
+            Image.get_animation("meteor")
+            Image.get_pieces()
+        Thread(target=preload_inside).start()
+
+    @staticmethod
+    def get_cache_angles(textures: list[pg.Surface], sizes: list[int]) -> np.ndarray:
+        res = np.zeros((len(textures), len(sizes), 181), dtype=pg.Surface)
+        for img_i, img in enumerate(textures):
+            img_ar = res[img_i]
+            for size_i, size in enumerate(sizes):
+                size_ar = img_ar[size_i]
+                scaled_img = Image.scale(img, size)
+                for angle in range(181):
+                    size_ar[angle] = pg.transform.rotate(scaled_img, angle)
+        return res
+
+    @staticmethod
+    def get_cache_by_angle(cache: np.ndarray, model: int, size: int, angle: int):
+        if angle <= 180:
+            return cache[model][size][angle]
+        else:
+            return pg.transform.flip(cache[model][size][angle - 180], True, True)
 
     @staticmethod
     def scale(texture: pg.Surface, size: float) -> pg.Surface:
