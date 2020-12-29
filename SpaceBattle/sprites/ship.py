@@ -16,7 +16,6 @@ class Ship(Shootable, Rotatable, Acceleratable, Bound.Resistable, TextureUpdatab
     Can shooting rockets
     Can by destroyed by meteors
     """
-    needs_update: bool = False
     _accuracy = 50 / Conf.Control.Mouse.ACCURACY
 
     def __init__(self):
@@ -24,8 +23,6 @@ class Ship(Shootable, Rotatable, Acceleratable, Bound.Resistable, TextureUpdatab
         self.texture_fire = Img.scale(Img.get_ship(True), Conf.Ship.SIZE)
         super().__init__(texture=self.texture_normal)
         # Variables
-        self.half_width = self.texture_normal.get_width() / 2
-        self.half_height = self.texture_normal.get_height() / 2
         self.with_fire = False
 
     def update(self):
@@ -62,7 +59,7 @@ class Ship(Shootable, Rotatable, Acceleratable, Bound.Resistable, TextureUpdatab
         elif delta < -180: delta += 360
         if smooth:
             if abs(delta) > 50 / Conf.Control.Mouse.ACCURACY * Conf.System.SCALE:
-                delta = delta / Conf.Control.Mouse.SMOOTH * Conf.System.SCALE
+                delta = delta / Conf.Control.Mouse.SMOOTH
                 super().rotate(delta)
         else:
             super().rotate(delta)
@@ -80,10 +77,9 @@ class Ship(Shootable, Rotatable, Acceleratable, Bound.Resistable, TextureUpdatab
             if with_fire: Snd.engine()
 
     def update_texture(self, raw_texture: pg.Surface, size: float) -> None:
-        self.texture = Img.scale(raw_texture, size)
-        self.image = self.texture
         self.texture_normal = Img.scale(Img.get_ship(False), size)
         self.texture_fire = Img.scale(Img.get_ship(True), size)
+        super().update_texture(raw_texture, size)
 
     @staticmethod
     def set_texture(num: int):

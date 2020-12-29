@@ -10,12 +10,12 @@ class Configuration:
 
     class Window:
         TITLE = "Space Battle"
-        FULLSCREEN = False
+        FULLSCREEN = True
         WIDTH = 1000
         HEIGHT = 1000
 
     class Game:
-        LOSE_DELAY = 9
+        LOSE_DELAY = 900  # ms
         DIFFICULTY = [
                     ("novice", (1100, 10)),
                     ("easy", (900, 20)),
@@ -33,6 +33,7 @@ class Configuration:
             COLOR = (255, 30, 30)
             X_OFFSET = 10
             Y_OFFSET = -5
+            PERIOD = 200
             DELTA = 20
 
         class Score:
@@ -101,7 +102,7 @@ class Configuration:
 
     class Animation:
         DEFAULT_SIZE = 200
-        FPS = 30
+        FPS = 40
 
     class Image:
         SHIP = 0
@@ -109,9 +110,11 @@ class Configuration:
         ROCKET = 0
         MENU_BG = 0
         STATIC_BG = 0
-        ANIM_FORMAT = "gif"
-        SPRITE_FORMAT = "png"
-        BASIC_FORMAT = "jpg"
+
+        class Format:
+            ANIM = "gif"
+            SPRITE = "png"
+            BASIC = "jpg"
 
     class Sound:
         SHOOT = 0
@@ -145,6 +148,7 @@ class Configuration:
         LIFES = 3
 
     # Checking parameters
+    assert Game.LOSE_DELAY > 0
     assert 0 <= Ship.RESIST
     assert 0 < Ship.DEAD_SPEED < 1
     assert Control.Mouse.SMOOTH >= 1

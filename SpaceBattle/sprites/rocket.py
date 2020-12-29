@@ -14,7 +14,6 @@ class Rocket(Bound.Killable, Movable, TextureUpdatable):
     Flies out from the rocket's nose.
     Destroys meteors
     """
-    needs_update = False
 
     def __init__(self):
         super().__init__(texture=Img.scale(Img.get_rocket(), Conf.Rocket.SIZE))

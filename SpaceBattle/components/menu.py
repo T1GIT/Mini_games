@@ -114,7 +114,7 @@ class Menu(AbstractComponent):
                 ("dynamic", True)
             ], font_color=Conf.Menu.FONT_COLOR,
             default=1 if Conf.Meteor.BY_TIME else 0,
-            onchange=lambda _, value: Spawner.change_spawn_mode(value)
+            onchange=lambda _, value: Spawner.change_meteor_spawn_mode(value)
         )
         menu.add_selector(
             f'Difficulty:  ',

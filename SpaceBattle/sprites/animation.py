@@ -17,16 +17,15 @@ class Animation(Locatable):
     def __init__(self, name: str, size: int = Conf.Animation.DEFAULT_SIZE):
         self.frames = deque(map(lambda x: Img.scale(x, size), Img.get_animation(name)))
         super().__init__(texture=self.frames.popleft())
-        self.frame_timer = Timer()
+        self.frames_timer = Timer(1000 / Conf.Animation.FPS)
 
     def update(self):
-        if self.frame_timer.tick():
-            self.frame_timer.set(Conf.System.FPS // Conf.Animation.FPS)
+        if self.frames_timer.tick():
+            self.frames_timer.start()
             if len(self.frames) > 0:
                 self.image = self.frames.popleft()
-                self.rect = self.image.get_rect(center=self.rect.center)
             else:
-                self.kill()
+                super().kill()
 
     @staticmethod
     def on_sprite(name: str, sprite: pg.sprite.Sprite, size: int):

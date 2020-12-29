@@ -26,9 +26,9 @@ class Window(tk.Tk):
 
     def reset(self):
         self.started = False
-        self.comp_win.reset()
-        self.comp_game.reset()
-        self.comp_menu.reset()
+        self.comp_win.start()
+        self.comp_game.start()
+        self.comp_menu.start()
 
     def event_handler(self, event_name):
         if event_name == "exit":

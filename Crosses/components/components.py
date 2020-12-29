@@ -16,7 +16,7 @@ class ComponentWin(tk.Frame):
                                      relief=Conf.RELIEF, bg=Conf.MENU_BTN_CLR, fg=Conf.TEXT_CLR,
                                      activebackground=Conf.ACT_MENU_BTN_CLR, activeforeground=Conf.ACT_TEXT_CLR,
                                      height=Conf.BTN_HEIGHT, width=self.master.btn_width,
-                                     command=lambda: self.master.reset(),
+                                     command=lambda: self.master.start(),
                                      image=self.master.pixel, compound=tk.CENTER,
                                      font=(Conf.FONT, Conf.SIGN_SIZE // 4))
         self.lbl_win.pack(pady=Conf.PADDING, padx=Conf.PADDING, fill=tk.X)

@@ -33,7 +33,7 @@ class Image:
     def get_menu() -> pygame_menu.baseimage.BaseImage:
         if Image._MENU is None:
             Image._MENU = pygame_menu.baseimage.BaseImage(
-                image_path=f"{Image._ROOT}/bg/menu/{Conf.Image.MENU_BG}.{Conf.Image.BASIC_FORMAT}")
+                image_path=f"{Image._ROOT}/bg/menu/{Conf.Image.MENU_BG}.{Conf.Image.Format.BASIC}")
         return Image._MENU
 
     @staticmethod
@@ -42,8 +42,8 @@ class Image:
             Image._SHIPS = []
             for x in range(Image.SHIPS_AMOUNT):
                 Image._SHIPS.append([
-                    pg.image.load(f"{Image._ROOT}/ship/{x}/normal.{Conf.Image.SPRITE_FORMAT}").convert_alpha(),
-                    pg.image.load(f"{Image._ROOT}/ship/{x}/fire.{Conf.Image.SPRITE_FORMAT}").convert_alpha()
+                    pg.image.load(f"{Image._ROOT}/ship/{x}/normal.{Conf.Image.Format.SPRITE}").convert_alpha(),
+                    pg.image.load(f"{Image._ROOT}/ship/{x}/fire.{Conf.Image.Format.SPRITE}").convert_alpha()
                 ])
         return Image._SHIPS[Conf.Image.SHIP][1 if with_fire else 0]
 
@@ -53,7 +53,7 @@ class Image:
             pack = []
             path = f"{Image._ROOT}/meteor"
             for x in range(Image._METEORS_AMOUNT):
-                pack.append(pg.image.load(f"{path}/{x}.{Conf.Image.SPRITE_FORMAT}").convert_alpha())
+                pack.append(pg.image.load(f"{path}/{x}.{Conf.Image.Format.SPRITE}").convert_alpha())
             cnf = Conf.Meteor
             Image._METEORS = Image.get_cache_angles(pack, list(np.linspace(cnf.MIN_SIZE, cnf.MAX_SIZE, cnf.SIZES)))
         return Image._METEORS
@@ -64,21 +64,21 @@ class Image:
             Image._ROCKETS = []
             for x in range(Image.ROCKETS_AMOUNT):
                 Image._ROCKETS.append(pg.image.load(
-                    f"{Image._ROOT}/rocket/{x}.{Conf.Image.SPRITE_FORMAT}").convert_alpha())
+                    f"{Image._ROOT}/rocket/{x}.{Conf.Image.Format.SPRITE}").convert_alpha())
         return Image._ROCKETS[Conf.Image.ROCKET]
 
     @staticmethod
     def get_life() -> pg.Surface:
         if Image._LIFE is None:
             Image._LIFE = pg.image.load(
-                f"{Image._ROOT}/life/{Conf.Image.LIFE}.{Conf.Image.SPRITE_FORMAT}").convert_alpha()
+                f"{Image._ROOT}/life/{Conf.Image.LIFE}.{Conf.Image.Format.SPRITE}").convert_alpha()
         return Image._LIFE
 
     @staticmethod
     def get_background() -> pg.Surface:
         if Image._BACKGROUND is None:
             Image._BACKGROUND = pg.image.load(
-                f"{Image._ROOT}/bg/static/{Conf.Image.STATIC_BG}.{Conf.Image.BASIC_FORMAT}").convert()
+                f"{Image._ROOT}/bg/static/{Conf.Image.STATIC_BG}.{Conf.Image.Format.BASIC}").convert()
         return Image._BACKGROUND
 
     @staticmethod
@@ -87,7 +87,7 @@ class Image:
             pack = []
             path = f"{Image._ROOT}/anim/{name}"
             for frame in range(len([f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))])):
-                pack.append(pg.image.load(f"{path}/{frame}.{Conf.Image.ANIM_FORMAT}").convert_alpha())
+                pack.append(pg.image.load(f"{path}/{frame}.{Conf.Image.Format.ANIM}").convert_alpha())
             Image._ANIMATIONS.update({name: pack})
         return Image._ANIMATIONS[name]
 
@@ -97,7 +97,7 @@ class Image:
             Image._PIECES = []
             path = f"{Image._ROOT}/piece"
             for x in range(len([f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))])):
-                Image._PIECES.append(pg.image.load(f"{path}/{x}.{Conf.Image.SPRITE_FORMAT}").convert_alpha())
+                Image._PIECES.append(pg.image.load(f"{path}/{x}.{Conf.Image.Format.SPRITE}").convert_alpha())
         return Image._PIECES
 
     @staticmethod

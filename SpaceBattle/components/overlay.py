@@ -102,10 +102,11 @@ class Overlay(AbstractComponent):
         def __init__(self):
             super().__init__()
             self.font = pg.font.Font("resources/fonts/opensans.ttf", Conf.Overlay.Framerate.SIZE)
-            self.needs_update = False
-            self.visible = Conf.Overlay.Framerate.VISIBLE
-            self.value = 0
-            self.period = 0
+            self.needs_update: bool = False
+            self.visible: bool = Conf.Overlay.Framerate.VISIBLE
+            self.amount_frames: int = 0
+            self.value: int = 0
+            self.last_time: int = 0
             self.image = self.font.render("", True, Conf.Overlay.Framerate.COLOR)
             self.image.set_alpha(Conf.Overlay.OPACITY)
 
@@ -113,8 +114,8 @@ class Overlay(AbstractComponent):
             return self.value
 
         def show(self) -> None:
-            self.rect = self.image.get_rect(bottomright=(
-                Conf.Window.WIDTH - Conf.Overlay.Framerate.X_OFFSET, Conf.Window.HEIGHT - Conf.Overlay.Framerate.Y_OFFSET))
+            self.rect = self.image.get_rect(bottomright=(Conf.Window.WIDTH - Conf.Overlay.Framerate.X_OFFSET,
+                                                         Conf.Window.HEIGHT - Conf.Overlay.Framerate.Y_OFFSET))
 
         def update(self) -> None:
             if self.visible:
@@ -128,8 +129,11 @@ class Overlay(AbstractComponent):
             elif Conf.Overlay.Framerate.VISIBLE:
                 self.visible = True
 
+        def add_frame(self):
+            self.amount_frames += 1
+
         def refresh(self):
-            if self.period != 0:
-                self.value = round(1e9 / ((time_ns() - self.period) / Conf.Overlay.Framerate.DELTA) / Conf.System.SCALE)
-                self.needs_update = True
-            self.period = time_ns()
+            self.value = round(self.amount_frames * (1000 / ((time_ns() - self.last_time) / 1e6)))
+            self.last_time = time_ns()
+            self.amount_frames = 0
+            self.needs_update = True

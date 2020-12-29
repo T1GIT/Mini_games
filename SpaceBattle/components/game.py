@@ -33,10 +33,10 @@ class Game(AbstractComponent):
         # Sprites
         self.ship: Ship = Ship()
         # Timers
-        self.meteor_timer: Timer = Timer()
-        self.rocket_timer: Timer = Timer()
-        self.losing_timer: Timer = Timer()
-        self.frames_timer: Timer = Timer()
+        self.meteor_timer = Timer(Conf.Meteor.PERIOD)
+        self.rocket_timer = Timer(Conf.Rocket.PERIOD)
+        self.losing_timer = Timer(Conf.Game.LOSE_DELAY)
+        self.frames_timer = Timer(Conf.Overlay.Framerate.PERIOD)
         # Background
         w0, h0 = Img.get_background().get_size()
         tar_size = max(w0, h0) * max((Conf.Window.WIDTH / w0, Conf.Window.HEIGHT / h0))
@@ -67,7 +67,7 @@ class Game(AbstractComponent):
             self.ship.kill()
             Snd.ex_ship()
             Animation.on_sprite("ship", self.ship, max(self.ship.rect.size) * Conf.Ship.ANIM_SCALE)
-            self.losing_timer.set(Conf.System.FPS * Conf.Game.LOSE_DELAY)
+            self.losing_timer.start()
             self.game_over = True
             Snd.game_over()
 
@@ -108,8 +108,8 @@ class Game(AbstractComponent):
             if kb_self_distract == [True, True] or gp_self_distract == [True, True]:
                 self.lose()
             # Shooting
-            if shoot and self.rocket_timer.tick():
-                self.rocket_timer.set((Conf.System.FPS * Conf.Rocket.PERIOD) // 1000)
+            if self.rocket_timer.tick() and shoot:
+                self.rocket_timer.start()
                 self.ship.shoot()
             # Moving
             self.ship.vector_accelerate(x, y)
@@ -125,7 +125,7 @@ class Game(AbstractComponent):
             pg.display.flip()
             if self.game_over:
                 if self.losing_timer.tick():
-                    self.window.reset()
+                    self.window.start()
                     self.window.open_menu()
             else:
                 self.preparation()
@@ -145,13 +145,14 @@ class Game(AbstractComponent):
         # Spawning
         if Conf.Meteor.BY_TIME:
             if self.meteor_timer.tick():
-                self.meteor_timer.set((Conf.System.FPS * Conf.Meteor.PERIOD) // 1000)
+                self.meteor_timer.start()
                 Spawner.meteor()
         else: Spawner.all_meteors()
         Spawner.all_pieces(False)
         # Refreshing framerate
+        self.comp_overlay.framerate.add_frame()
         if self.frames_timer.tick() and Conf.Overlay.Framerate.VISIBLE:
-            self.frames_timer.set(Conf.Overlay.Framerate.DELTA // Conf.System.SCALE)
+            self.frames_timer.start()
             self.comp_overlay.framerate.refresh()
 
     @staticmethod
