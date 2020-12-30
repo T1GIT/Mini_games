@@ -15,7 +15,7 @@ class Configuration:
         HEIGHT = 1000
 
     class Game:
-        LOSE_DELAY = 900  # ms
+        LOSE_DELAY = 3 * 1000  # ms
         DIFFICULTY = [
                     ("novice", (1100, 10)),
                     ("easy", (900, 20)),

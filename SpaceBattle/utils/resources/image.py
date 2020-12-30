@@ -1,6 +1,7 @@
 import os
 import random as rnd
 from threading import Thread
+from time import time_ns
 
 import numpy as np
 import pygame as pg
@@ -103,6 +104,8 @@ class Image:
     @staticmethod
     def preload():
         def preload_inside():
+            print("Caching started ...")
+            t = time_ns()
             Image.get_menu()
             Image.get_ship(True)
             Image.get_rocket()
@@ -112,6 +115,7 @@ class Image:
             Image.get_animation("ship")
             Image.get_animation("meteor")
             Image.get_pieces()
+            print(f"Caching took {round((time_ns() - t) / 1e6, 2)} ms")
         Thread(target=preload_inside).start()
 
     @staticmethod

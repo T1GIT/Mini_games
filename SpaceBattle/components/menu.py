@@ -1,7 +1,8 @@
 import pygame_menu
 import os.path
+import pygame as pg
 
-from components.abstractComponent import AbstractComponent
+from components.resetable import Resetable
 from components.game import Game
 from components.overlay import Overlay
 from config import Configuration as Conf
@@ -12,9 +13,10 @@ from utils.mechanics.spawner import Spawner
 from utils.resources.image import Image as Img
 from utils.listener.listener import EventListener
 from utils.resources.sound import Sound as Snd
+from utils.tools.exceptions import NewGameException
 
 
-class Menu(AbstractComponent):
+class Menu(Resetable):
     def __init__(self, window):
         # Environment
         self.window = window
@@ -23,6 +25,11 @@ class Menu(AbstractComponent):
         self.widget_font = "./resources/fonts/opensans-light.ttf"
         self.menu_settings = self.create_settings()
         self.menu_about = self.create_about()
+        self.menu_main = self.create_menu(self.menu_settings, self.menu_about)
+
+    def reset(self):
+        self.menu_about = self.create_about()
+        self.menu_settings = self.create_settings()
         self.menu_main = self.create_menu(self.menu_settings, self.menu_about)
 
     def create_about(self):
@@ -191,29 +198,26 @@ class Menu(AbstractComponent):
         menu.add_button('     Play     ', self.window.start, font_size=60, margin=(0, 50))
         menu.add_button('   Settings   ', settings)
         menu.add_button('     Info     ', about)
-        menu.add_button('     Exit     ', lambda: exit(69))
+        menu.add_button('     Exit     ', lambda: exit())
         # Sound
         self.engine.set_sound(pygame_menu.sound.SOUND_TYPE_CLICK_MOUSE, Snd.click(),
                               volume=Snd.get_volume(Conf.Sound.Volume.SFX))
         menu.set_sound(self.engine, recursive=True)
         return menu
 
-    def start(self):
-        self.window.set()
-
     def event_handler(self, events: dict[str, set[Event]]):
         for event in events[Dvc.KEYBOARD] | events[Dvc.GAMEPAD]:
             if (event.get_data() == Kb.Keys.ESC
                     or (event.get_type() == Gp.Events.KEY
                         and event.get_data() == Gp.Keys.START)):
-                self.window.play()
-
-    def reset(self):
-        self.menu_main = self.create_menu(self.menu_settings, self.menu_about)
+                self.window.toggle_menu()
 
     def open(self):
-        self.reset()
+        pg.mixer.stop()
+        Snd.bg_menu()
         self.menu_main.mainloop(self.window.screen, bgfun=lambda: self.event_handler(EventListener.get_events()))
 
     def close(self):
+        pg.mixer.stop()
+        Snd.bg_game()
         self.menu_main.disable()

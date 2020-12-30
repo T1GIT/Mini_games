@@ -1,14 +1,15 @@
+from time import time_ns
+
 from config import Configuration as Conf
 
 
 class Timer:
     def __init__(self, time: float):
-        self.time: float = Conf.System.GAME_SPEED / (1000 / time)
-        self.ticks: int = 0
+        self.time: float = time * 1e6
+        self.start_time: float = time_ns()
 
     def start(self) -> None:
-        self.ticks = round(self.time / Conf.System.SCALE)
+        self.start_time = time_ns()
 
-    def tick(self) -> bool:
-        self.ticks -= 1
-        return self.ticks <= 0
+    def is_ready(self) -> bool:
+        return time_ns() - self.start_time > self.time

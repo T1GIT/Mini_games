@@ -1,18 +1,18 @@
 from ctypes import windll
-from time import time_ns
 
 import pygame as pg
 
-from components.abstractComponent import AbstractComponent
 from components.game import Game
 from components.menu import Menu
+from components.resetable import Resetable
 from config import Configuration as Conf
 from utils.resources.image import Image as Img
-from utils.resources.sound import Sound as Snd
+from utils.tools.exceptions import GameOverException
 from utils.tools.group import Group
+from utils.tools.timer import Timer
 
 
-class Window(AbstractComponent):
+class Window(Resetable):
     """
     Class for show the main window.
     Initials the Game.
@@ -33,48 +33,38 @@ class Window(AbstractComponent):
         self.comp_game = Game(self)
         self.comp_menu = Menu(self)
         # Variables
-        self.esc_timer = time_ns()
+        self.escape_timer: Timer = Timer(Conf.Control.ESC_PERIOD)
         # Flags
         self.started = False
+        self.paused = False
 
     def reset(self):
-        for sprite in Group.ALL:
-            sprite.kill()
-        self.started = False
+        map(lambda sprite: sprite.kill(), Group.ALL)
         self.comp_game.reset()
+        self.comp_menu.reset()
+        self.started = False
+        self.paused = False
 
-    def pause(self):
-        if time_ns() - self.esc_timer > Conf.Control.ESC_PERIOD * 1e6:
-            self.esc_timer = time_ns()
-            self.open_menu()
-
-    def play(self):
-        if time_ns() - self.esc_timer > Conf.Control.ESC_PERIOD * 1e6 and self.started:
-            self.esc_timer = time_ns()
-            self.close_menu()
-
-    def open_menu(self):
-        pg.mixer.stop()
-        Snd.bg_menu()
-        pg.event.set_grab(False)
-        self.comp_menu.open()
-        pg.mouse.set_visible(False)
-
-    def close_menu(self):
-        pg.mixer.stop()
-        Snd.bg_game()
-        self.comp_menu.close()
-        pg.mouse.set_visible(False)
-        pg.event.set_grab(True)
+    def toggle_menu(self):
+        if self.started and self.escape_timer.is_ready():
+            if self.paused:
+                pg.mouse.set_visible(False)
+                pg.event.set_grab(True)
+                self.comp_menu.close()
+                self.paused = False
+            else:
+                pg.mouse.set_visible(True)
+                pg.event.set_grab(False)
+                self.comp_menu.open()
+            self.paused = not self.paused
+            self.escape_timer.start()
 
     def start(self):
-        if self.started:
-            self.reset()
+        pg.mouse.set_visible(False)
+        pg.event.set_grab(True)
         self.started = True
-        self.close_menu()
         self.comp_game.start()
 
     def show(self):
         Img.preload()
-        Snd.bg_menu()
         self.comp_menu.open()

@@ -1,6 +1,6 @@
 import pygame as pg
 
-from components.abstractComponent import AbstractComponent
+from components.resetable import Resetable
 from components.overlay import Overlay
 from config import Configuration as Conf
 from sprites.animation import Animation
@@ -11,11 +11,12 @@ from utils.mechanics.collider import Collider
 from utils.mechanics.spawner import Spawner
 from utils.resources.image import Image as Img
 from utils.resources.sound import Sound as Snd
+from utils.tools.exceptions import GameOverException
 from utils.tools.group import Group
 from utils.tools.timer import Timer
 
 
-class Game(AbstractComponent):
+class Game(Resetable):
     """
     Class which initials the game.
     Spawns meteors.
@@ -46,7 +47,14 @@ class Game(AbstractComponent):
         """
         Erases all mobs and objects
         """
-        self.__init__(self.window)
+        map(lambda sprite: sprite.kill(), Group.METEORS)
+        map(lambda sprite: sprite.kill(), Group.ROCKETS)
+        map(lambda sprite: sprite.kill(), Group.PIECES)
+        self.comp_overlay.reset()
+        self.ship = Ship()
+        Group.ALL.add(self.ship)
+        self.running = False
+        self.game_over = False
 
     def start(self):
         """
@@ -64,9 +72,9 @@ class Game(AbstractComponent):
 
     def lose(self):
         if not self.game_over:
-            self.ship.kill()
             Snd.ex_ship()
             Animation.on_sprite("ship", self.ship, max(self.ship.rect.size) * Conf.Ship.ANIM_SCALE)
+            self.ship.kill()
             self.losing_timer.start()
             self.game_over = True
             Snd.game_over()
@@ -93,22 +101,23 @@ class Game(AbstractComponent):
             if event.get_data() in (Kb.Keys.A, Kb.Keys.LEFT):     x -= 1
             if event.get_data() in (Kb.Keys.S, Kb.Keys.DOWN):     y -= 1
             if event.get_data() in (Kb.Keys.D, Kb.Keys.RIGHT):    x += 1
-            if event.get_data() == Kb.Keys.ESC: self.window.pause()
+            if event.get_data() == Kb.Keys.ESC: self.window.toggle_menu()
             if event.get_data() == Kb.Keys.SPACE: kb_self_distract[0] = True
             if event.get_data() == Kb.Keys.ENTER: kb_self_distract[1] = True
         for event in events.get(Dvc.GAMEPAD, ()):
             if event.get_type() == Gp.Events.LS:    x, y = event.get_data()
             if event.get_type() == Gp.Events.RS:    self.ship.vector_rotate(*event.get_data(), False)
-            if event.get_type() == Gp.Events.KEY and event.get_data() == Gp.Keys.RT: shoot = True
-            if event.get_type() == Gp.Events.KEY and event.get_data() == Gp.Keys.START: self.window.pause()
-            if event.get_type() == Gp.Events.KEY and event.get_data() == Gp.Keys.LS: gp_self_distract[0] = True
-            if event.get_type() == Gp.Events.KEY and event.get_data() == Gp.Keys.RS: gp_self_distract[1] = True
+            if event.get_type() == Gp.Events.KEY:
+                if event.get_data() == Gp.Keys.RT: shoot = True
+                if event.get_data() == Gp.Keys.START: self.window.toggle_menu()
+                if event.get_data() == Gp.Keys.LS: gp_self_distract[0] = True
+                if event.get_data() == Gp.Keys.RS: gp_self_distract[1] = True
         if not self.game_over:
             # Checking self-destruction
             if kb_self_distract == [True, True] or gp_self_distract == [True, True]:
                 self.lose()
             # Shooting
-            if self.rocket_timer.tick() and shoot:
+            if self.rocket_timer.is_ready() and shoot:
                 self.rocket_timer.start()
                 self.ship.shoot()
             # Moving
@@ -123,35 +132,34 @@ class Game(AbstractComponent):
             self.window.screen.blit(self.background, self.background.get_rect())
             Group.ALL.draw(self.window.screen)
             pg.display.flip()
-            if self.game_over:
-                if self.losing_timer.tick():
-                    self.window.start()
-                    self.window.open_menu()
-            else:
-                self.preparation()
+            self.preparation()
             self.clock.tick(Conf.System.FPS)
+            if self.game_over:
+                if self.losing_timer.is_ready():
+                    raise GameOverException()
 
     def preparation(self):
         """
         Do all actions per one frame
         """
         # Colliding
-        points = Collider.rockets_meteors()
-        wounds = Collider.ship_meteors(self.ship)
-        self.comp_overlay.score.up(points)
-        if wounds: self.comp_overlay.health.down()
-        if self.comp_overlay.health.is_dead():
-            self.lose()
+        if not self.game_over:
+            points = Collider.rockets_meteors()
+            wounds = Collider.ship_meteors(self.ship)
+            self.comp_overlay.score.up(points)
+            if wounds: self.comp_overlay.health.down()
+            if self.comp_overlay.health.is_dead():
+                self.lose()
         # Spawning
         if Conf.Meteor.BY_TIME:
-            if self.meteor_timer.tick():
+            if self.meteor_timer.is_ready():
                 self.meteor_timer.start()
                 Spawner.meteor()
         else: Spawner.all_meteors()
         Spawner.all_pieces(False)
         # Refreshing framerate
         self.comp_overlay.framerate.add_frame()
-        if self.frames_timer.tick() and Conf.Overlay.Framerate.VISIBLE:
+        if self.frames_timer.is_ready() and Conf.Overlay.Framerate.VISIBLE:
             self.frames_timer.start()
             self.comp_overlay.framerate.refresh()
 

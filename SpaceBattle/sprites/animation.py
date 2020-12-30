@@ -20,7 +20,7 @@ class Animation(Locatable):
         self.frames_timer = Timer(1000 / Conf.Animation.FPS)
 
     def update(self):
-        if self.frames_timer.tick():
+        if self.frames_timer.is_ready():
             self.frames_timer.start()
             if len(self.frames) > 0:
                 self.image = self.frames.popleft()

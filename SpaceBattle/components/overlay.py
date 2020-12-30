@@ -2,13 +2,13 @@ import pygame as pg
 from collections import deque
 from time import time_ns
 
-from components.abstractComponent import AbstractComponent
+from components.resetable import Resetable
 from config import Configuration as Conf
 from utils.tools.group import Group
 from utils.resources.image import Image as Img
 
 
-class Overlay(AbstractComponent):
+class Overlay(Resetable):
     def __init__(self, game):
         self.game = game
         # Components
@@ -25,7 +25,7 @@ class Overlay(AbstractComponent):
         """
         self.score.reset()
         self.health.reset()
-        self.Framerate.reset()
+        self.framerate.reset()
         self.__init__(self.game)
 
     def show(self):
@@ -64,7 +64,7 @@ class Overlay(AbstractComponent):
             self.need_update = True
             self.score += Conf.Overlay.Score.DELTA * points
 
-    class Health(pg.sprite.Sprite, AbstractComponent):
+    class Health(pg.sprite.Sprite, Resetable):
         def __init__(self):
             super().__init__()
             self.points: deque[pg.sprite.Sprite] = deque()
@@ -78,6 +78,9 @@ class Overlay(AbstractComponent):
                 point.image.set_alpha(Conf.Overlay.OPACITY)
                 self.points.append(point)
                 Group.ALL.add(point)
+
+        def reset(self):
+            self.__init__()
 
         def get_lifes(self) -> int:
             return len(self.points)
@@ -98,7 +101,7 @@ class Overlay(AbstractComponent):
     def fps_toggle(value):
         Conf.Overlay.Framerate.VISIBLE = value
 
-    class Framerate(pg.sprite.Sprite, AbstractComponent):
+    class Framerate(pg.sprite.Sprite, Resetable):
         def __init__(self):
             super().__init__()
             self.font = pg.font.Font("resources/fonts/opensans.ttf", Conf.Overlay.Framerate.SIZE)
@@ -109,6 +112,9 @@ class Overlay(AbstractComponent):
             self.last_time: int = 0
             self.image = self.font.render("", True, Conf.Overlay.Framerate.COLOR)
             self.image.set_alpha(Conf.Overlay.OPACITY)
+
+        def reset(self):
+            self.__init__()
 
         def get(self) -> int:
             return self.value
