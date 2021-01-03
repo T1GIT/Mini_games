@@ -38,6 +38,7 @@ class Window(Resetable):
         self.new_game = False
         self.started = False
         self.paused = False
+        self.ready = False
 
     def reset(self):
         self.comp_game.reset()
@@ -55,22 +56,25 @@ class Window(Resetable):
             self.toggle_mouse(self.paused)
 
     def start(self):
-        self.comp_menu.close()
-        if self.started:
-            raise NewGameException()
-        else:
-            self.toggle_mouse(False)
-            Snd.bg_game()
-            self.started = True
-            try:
-                self.comp_game.start()
-            except GameOverException:
-                pass
-            except NewGameException:
-                self.new_game = True
+        if self.ready:
+            self.comp_menu.close()
+            if self.started:
+                raise NewGameException()
+            else:
+                self.toggle_mouse(False)
+                Snd.bg_game()
+                self.started = True
+                try:
+                    self.comp_game.start()
+                except GameOverException:
+                    pass
+                except NewGameException:
+                    self.new_game = True
 
     def show(self):
-        Img.preload()
+        def finish():
+            self.ready = True
+        Img.preload(finish)
         while True:
             if self.new_game:
                 self.new_game = False
@@ -81,9 +85,9 @@ class Window(Resetable):
                 self.comp_menu.open()
             self.reset()
 
-    @staticmethod
-    def exit():
-        exit()
+    def exit(self):
+        if self.ready:
+            exit()
 
     @staticmethod
     def toggle_mouse(value: bool):

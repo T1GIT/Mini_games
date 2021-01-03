@@ -101,7 +101,7 @@ class Image:
         return Image._PIECES
 
     @staticmethod
-    def preload():
+    def preload(func: callable):
         def preload_inside():
             print("Caching started ...")
             t = time_ns()
@@ -115,6 +115,7 @@ class Image:
             Image.get_animation("meteor")
             Image.get_pieces()
             print(f"Caching took {round((time_ns() - t) / 1e6, 2)} ms")
+            func()
         Thread(target=preload_inside).start()
 
     @staticmethod

@@ -136,7 +136,9 @@ class Overlay(Resetable):
             self.amount_frames += 1
 
         def refresh(self):
-            super().set_value(round(self.amount_frames * (1000 / ((time_ns() - self.last_time) / 1e6))))
+            super().set_value(min(
+                round(self.amount_frames * (1000 / ((time_ns() - self.last_time) / 1e6))),
+                Conf.System.FPS))
             self.last_time = time_ns()
             self.amount_frames = 0
 
