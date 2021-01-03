@@ -5,8 +5,8 @@ from sprites.animation import Animation
 from sprites.meteor import Meteor
 from sprites.rocket import Rocket
 from sprites.ship import Ship
-from utils.tools.groups import Groups
 from utils.resources.sound import Sound as Snd
+from utils.tools.groups import Groups
 
 
 class Collider:

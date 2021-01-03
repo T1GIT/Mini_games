@@ -4,8 +4,8 @@ import pygame as pg
 
 from config import Configuration as Conf
 from sprites.interfaces.basic import Locatable
-from utils.tools.groups import Groups
 from utils.resources.image import Image as Img
+from utils.tools.groups import Groups
 from utils.tools.timer import Timer
 
 

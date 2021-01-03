@@ -1,5 +1,4 @@
 import os
-import random as rnd
 from threading import Thread
 from time import time_ns
 

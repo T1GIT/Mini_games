@@ -1,11 +1,11 @@
-from math import cos, sin, atan2, sqrt, degrees, tan, hypot
+from math import atan2, degrees, tan
 
 import pygame as pg
 
 from config import Configuration as Conf
-from sprites.interfaces.basic import TextureUpdatable, Rotatable, Acceleratable
-from sprites.interfaces.extended import Shootable
+from sprites.interfaces.basic import TextureUpdatable, Acceleratable
 from sprites.interfaces.bound import Bound
+from sprites.interfaces.extended import Shootable
 from utils.resources.image import Image as Img
 from utils.resources.sound import Sound as Snd
 

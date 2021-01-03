@@ -3,7 +3,6 @@ from math import radians, cos, sin
 import pygame as pg
 
 from sprites.interfaces.basic import Rotatable
-from sprites.interfaces.bound import Bound
 from sprites.rocket import Rocket
 from utils.tools.groups import Groups
 

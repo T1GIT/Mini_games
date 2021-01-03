@@ -10,7 +10,7 @@ class Configuration:
 
     class Window:
         TITLE = "Space Battle"
-        FULLSCREEN = False
+        FULLSCREEN = True
         WIDTH = 1000
         HEIGHT = 1000
 
@@ -94,7 +94,7 @@ class Configuration:
 
     class Rocket:
         SIZE = 40  # px
-        SPEED = 20  # > 0
+        SPEED = 30  # > 0
         PERIOD = 200  # ms
         DESTROYABLE = True
         MAX_DISTANCE = 300  # px  (needs Rocket.UNLIMITED = False)
@@ -133,8 +133,8 @@ class Configuration:
 
         class Mouse:
             BUTTONS = 3
-            ACCURACY = 10  # [1; 10]
-            SMOOTH = 10  # >= 1
+            ACCURACY = 5  # [1; 10]
+            SMOOTH = 13  # >= 1
 
         class Stick:
             SENSITIVITY = 5  # [1; 10]

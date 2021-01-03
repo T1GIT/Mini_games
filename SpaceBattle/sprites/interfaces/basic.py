@@ -67,7 +67,7 @@ class Transparent(Locatable):
 class Text(Locatable):
     def __init__(self, font: pg.font.Font, color: tuple[int, int, int], value: object = ""):
         super().__init__(
-            texture=font.render("resources/fonts/opensans.ttf", True, color)
+            texture=font.render(str(value), True, color)
         )
         self._args: dict = {}
         self.font: pg.font.Font = font

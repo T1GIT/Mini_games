@@ -1,7 +1,7 @@
 import pygame as pg
 
-from components.overlay import Overlay
 from components.interfaces.resetable import Resetable
+from components.overlay import Overlay
 from config import Configuration as Conf
 from sprites.animation import Animation
 from sprites.ship import Ship
@@ -11,7 +11,6 @@ from utils.mechanics.collider import Collider
 from utils.mechanics.spawner import Spawner
 from utils.resources.image import Image as Img
 from utils.resources.sound import Sound as Snd
-from utils.tools.exceptions import GameOverException
 from utils.tools.groups import Groups
 from utils.tools.timer import Timer
 

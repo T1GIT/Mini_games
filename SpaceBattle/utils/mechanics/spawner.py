@@ -1,8 +1,9 @@
+import random as rnd
+
 from config import Configuration as Conf
 from sprites.meteor import Meteor
 from sprites.piece import Piece
 from utils.tools.groups import Groups
-import random as rnd
 
 
 class Spawner:

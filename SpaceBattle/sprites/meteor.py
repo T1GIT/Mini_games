@@ -1,10 +1,11 @@
 import random as rnd
 
+import pygame as pg
+
 from config import Configuration as Conf
 from sprites.interfaces.basic import Rotatable
 from sprites.interfaces.bound import Bound
 from utils.resources.image import Image as Img
-import pygame as pg
 
 
 class Meteor(Rotatable, Bound.Teleportable, Bound.Killable):

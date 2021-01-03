@@ -1,7 +1,5 @@
 from time import time_ns
 
-from config import Configuration as Conf
-
 
 class Timer:
     def __init__(self, time: float):

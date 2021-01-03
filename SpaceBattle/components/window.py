@@ -3,8 +3,8 @@ from ctypes import windll
 import pygame as pg
 
 from components.game import Game
-from components.menu import Menu
 from components.interfaces.resetable import Resetable
+from components.menu import Menu
 from config import Configuration as Conf
 from utils.resources.image import Image as Img
 from utils.resources.sound import Sound as Snd
@@ -48,11 +48,11 @@ class Window(Resetable):
     def toggle_menu(self):
         if self.started and self.escape_timer.is_ready():
             self.paused = not self.paused
-            pg.event.set_grab(not self.paused)
+            self.toggle_mouse(self.paused)
             self.escape_timer.start()
             Snd.bg_menu() if self.paused else Snd.bg_game()
             self.comp_menu.open() if self.paused else self.comp_menu.close()
-            pg.mouse.set_visible(self.paused)
+            self.toggle_mouse(self.paused)
 
     def start(self):
         self.comp_menu.close()
