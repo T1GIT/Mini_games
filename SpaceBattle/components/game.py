@@ -125,10 +125,11 @@ class Game(Resetable):
             self.ship.vector_accelerate(x, y)
 
     def mainloop(self):
-        while True:
+        while self.running:
             events = EventListener.get_events()
             if self.game_over_flag: events = {Dvc.SYSTEM: events[Dvc.SYSTEM]}
             self.event_handler(events)
+            pg.event.get()
             Groups.ALL.update()
             self.window.screen.blit(self.background, self.background.get_rect())
             Groups.ALL.draw(self.window.screen)
@@ -165,7 +166,6 @@ class Game(Resetable):
         if self.game_over_flag:
             if self.losing_timer.is_ready():
                 self.running = False
-                raise GameOverException()
 
     @staticmethod
     def change_fps(value: int):

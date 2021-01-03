@@ -59,28 +59,33 @@ class Window(Resetable):
         if self.started:
             raise NewGameException()
         else:
-            pg.mouse.set_visible(False)
-            pg.event.set_grab(True)
+            self.toggle_mouse(False)
             Snd.bg_game()
             self.started = True
-            self.comp_game.start()
+            try:
+                self.comp_game.start()
+            except GameOverException:
+                pass
+            except NewGameException:
+                self.new_game = True
 
     def show(self):
         Img.preload()
         while True:
-            try:
-                if self.new_game:
-                    self.new_game = False
-                    self.start()
-                else:
-                    Snd.bg_menu()
-                    self.comp_menu.open()
-            except GameOverException:
-                self.reset()
-            except NewGameException:
-                self.new_game = True
-                self.reset()
+            if self.new_game:
+                self.new_game = False
+                self.start()
+            else:
+                Snd.bg_menu()
+                self.toggle_mouse(True)
+                self.comp_menu.open()
+            self.reset()
 
     @staticmethod
     def exit():
         exit()
+
+    @staticmethod
+    def toggle_mouse(value: bool):
+        pg.mouse.set_visible(value)
+        pg.event.set_grab(not value)
