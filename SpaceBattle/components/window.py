@@ -4,11 +4,11 @@ import pygame as pg
 
 from components.game import Game
 from components.menu import Menu
-from components.resetable import Resetable
+from components.interfaces.resetable import Resetable
 from config import Configuration as Conf
 from utils.resources.image import Image as Img
-from utils.tools.exceptions import GameOverException
-from utils.tools.group import Group
+from utils.resources.sound import Sound as Snd
+from utils.tools.exceptions import GameOverException, NewGameException
 from utils.tools.timer import Timer
 
 
@@ -35,11 +35,11 @@ class Window(Resetable):
         # Variables
         self.escape_timer: Timer = Timer(Conf.Control.ESC_PERIOD)
         # Flags
+        self.new_game = False
         self.started = False
         self.paused = False
 
     def reset(self):
-        map(lambda sprite: sprite.kill(), Group.ALL)
         self.comp_game.reset()
         self.comp_menu.reset()
         self.started = False
@@ -47,24 +47,40 @@ class Window(Resetable):
 
     def toggle_menu(self):
         if self.started and self.escape_timer.is_ready():
-            if self.paused:
-                pg.mouse.set_visible(False)
-                pg.event.set_grab(True)
-                self.comp_menu.close()
-                self.paused = False
-            else:
-                pg.mouse.set_visible(True)
-                pg.event.set_grab(False)
-                self.comp_menu.open()
             self.paused = not self.paused
+            pg.event.set_grab(not self.paused)
             self.escape_timer.start()
+            Snd.bg_menu() if self.paused else Snd.bg_game()
+            self.comp_menu.open() if self.paused else self.comp_menu.close()
+            pg.mouse.set_visible(self.paused)
 
     def start(self):
-        pg.mouse.set_visible(False)
-        pg.event.set_grab(True)
-        self.started = True
-        self.comp_game.start()
+        self.comp_menu.close()
+        if self.started:
+            raise NewGameException()
+        else:
+            pg.mouse.set_visible(False)
+            pg.event.set_grab(True)
+            Snd.bg_game()
+            self.started = True
+            self.comp_game.start()
 
     def show(self):
         Img.preload()
-        self.comp_menu.open()
+        while True:
+            try:
+                if self.new_game:
+                    self.new_game = False
+                    self.start()
+                else:
+                    Snd.bg_menu()
+                    self.comp_menu.open()
+            except GameOverException:
+                self.reset()
+            except NewGameException:
+                self.new_game = True
+                self.reset()
+
+    @staticmethod
+    def exit():
+        exit()

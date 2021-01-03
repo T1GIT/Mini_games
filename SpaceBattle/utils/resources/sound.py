@@ -25,6 +25,7 @@ class Sound:
     """
     @staticmethod
     def bg_menu():
+        pg.mixer.stop()
         pg.mixer.music.load(
             f'{Sound._ROOT}/background/menu/{Conf.Sound.BG_MENU}.{Conf.Sound.FORMAT}')
         pg.mixer.music.set_volume(Sound.get_volume(Sound._VOLUME.BG))
@@ -33,6 +34,7 @@ class Sound:
 
     @staticmethod
     def bg_game():
+        pg.mixer.stop()
         pg.mixer.music.load(
             f'{Sound._ROOT}/background/game/{Conf.Sound.BG_GAME}.{Conf.Sound.FORMAT}')
         pg.mixer.music.set_volume(Sound.get_volume(Sound._VOLUME.BG))

@@ -1,7 +1,7 @@
 import pygame as pg
 
-from components.resetable import Resetable
 from components.overlay import Overlay
+from components.interfaces.resetable import Resetable
 from config import Configuration as Conf
 from sprites.animation import Animation
 from sprites.ship import Ship
@@ -12,7 +12,7 @@ from utils.mechanics.spawner import Spawner
 from utils.resources.image import Image as Img
 from utils.resources.sound import Sound as Snd
 from utils.tools.exceptions import GameOverException
-from utils.tools.group import Group
+from utils.tools.groups import Groups
 from utils.tools.timer import Timer
 
 
@@ -26,9 +26,9 @@ class Game(Resetable):
     def __init__(self, window):
         # Environment
         self.window = window
-        self.running: bool = False
-        self.game_over: bool = False
+        self.game_over_flag: bool = False
         self.clock: pg.time.Clock = pg.time.Clock()
+        self.running: bool = False
         # Components
         self.comp_overlay: Overlay = Overlay(self)
         # Sprites
@@ -47,36 +47,37 @@ class Game(Resetable):
         """
         Erases all mobs and objects
         """
-        map(lambda sprite: sprite.kill(), Group.METEORS)
-        map(lambda sprite: sprite.kill(), Group.ROCKETS)
-        map(lambda sprite: sprite.kill(), Group.PIECES)
         self.comp_overlay.reset()
+        Groups.METEORS.kill()
+        Groups.ROCKETS.kill()
+        Groups.PIECES.kill()
+        self.ship.kill()
         self.ship = Ship()
-        Group.ALL.add(self.ship)
+        self.game_over_flag = False
         self.running = False
-        self.game_over = False
 
     def start(self):
         """
         Starts the game
         """
-        self.game_over = False
-        self.running = True
+        self.game_over_flag = False
         self.comp_overlay.show()
+        self.ship.add(Groups.ALL)
         self.ship.locate(Conf.Window.WIDTH // 2, Conf.Window.HEIGHT // 2)
-        Group.ALL.add(self.ship)
+        Groups.ALL.add(self.ship)
         if not Conf.Meteor.BY_TIME:
             Spawner.all_meteors()
         Spawner.all_pieces(True)
+        self.running = True
         self.mainloop()
 
     def lose(self):
-        if not self.game_over:
+        if not self.game_over_flag:
             Snd.ex_ship()
             Animation.on_sprite("ship", self.ship, max(self.ship.rect.size) * Conf.Ship.ANIM_SCALE)
             self.ship.kill()
             self.losing_timer.start()
-            self.game_over = True
+            self.game_over_flag = True
             Snd.game_over()
 
     def event_handler(self, events: [Event]):
@@ -90,7 +91,7 @@ class Game(Resetable):
         gp_self_distract = [False, False]
         for event in events.get(Dvc.SYSTEM, ()):
             if event.get_type() == Sys.Events.QUIT:
-                self.running = False
+                self.window.exit()
         for event in events.get(Dvc.MOUSE, ()):
             if event.get_type() == Ms.Events.MOVE:
                 self.ship.vector_rotate(*event.get_data(), True)
@@ -112,7 +113,7 @@ class Game(Resetable):
                 if event.get_data() == Gp.Keys.START: self.window.toggle_menu()
                 if event.get_data() == Gp.Keys.LS: gp_self_distract[0] = True
                 if event.get_data() == Gp.Keys.RS: gp_self_distract[1] = True
-        if not self.game_over:
+        if not self.game_over_flag:
             # Checking self-destruction
             if kb_self_distract == [True, True] or gp_self_distract == [True, True]:
                 self.lose()
@@ -124,32 +125,30 @@ class Game(Resetable):
             self.ship.vector_accelerate(x, y)
 
     def mainloop(self):
-        while self.running:
+        while True:
             events = EventListener.get_events()
-            if self.game_over: events = {Dvc.SYSTEM: events[Dvc.SYSTEM]}
+            if self.game_over_flag: events = {Dvc.SYSTEM: events[Dvc.SYSTEM]}
             self.event_handler(events)
-            Group.ALL.update()
+            Groups.ALL.update()
             self.window.screen.blit(self.background, self.background.get_rect())
-            Group.ALL.draw(self.window.screen)
+            Groups.ALL.draw(self.window.screen)
             pg.display.flip()
             self.preparation()
             self.clock.tick(Conf.System.FPS)
-            if self.game_over:
-                if self.losing_timer.is_ready():
-                    raise GameOverException()
 
     def preparation(self):
         """
         Do all actions per one frame
         """
         # Colliding
-        if not self.game_over:
-            points = Collider.rockets_meteors()
-            wounds = Collider.ship_meteors(self.ship)
-            self.comp_overlay.score.up(points)
-            if wounds: self.comp_overlay.health.down()
+        if not self.game_over_flag:
             if self.comp_overlay.health.is_dead():
                 self.lose()
+            else:
+                hits = Collider.rockets_meteors()
+                wounds = Collider.ship_meteors(self.ship)
+                self.comp_overlay.score.up(hits)
+                self.comp_overlay.health.down(wounds)
         # Spawning
         if Conf.Meteor.BY_TIME:
             if self.meteor_timer.is_ready():
@@ -162,6 +161,11 @@ class Game(Resetable):
         if self.frames_timer.is_ready() and Conf.Overlay.Framerate.VISIBLE:
             self.frames_timer.start()
             self.comp_overlay.framerate.refresh()
+        # Checking death
+        if self.game_over_flag:
+            if self.losing_timer.is_ready():
+                self.running = False
+                raise GameOverException()
 
     @staticmethod
     def change_fps(value: int):

@@ -15,14 +15,14 @@ class Image:
     Class containing objects' images, already prepared for using
     """
     _ROOT = "./resources/images"
-    _SHIPS = None
-    _ROCKETS = None
-    _METEORS = None
-    _BACKGROUND = None
-    _PIECES = None
-    _MENU = None
-    _LIFE = None
-    _ANIMATIONS = dict()
+    _SHIPS: [[pg.Surface]] = None
+    _ROCKETS: [pg.Surface] = None
+    _METEORS: np.ndarray = None
+    _BACKGROUND: pg.Surface = None
+    _PIECES: [pg.Surface] = None
+    _MENU: [pygame_menu.baseimage] = None
+    _LIFE: pg.Surface = None
+    _ANIMATIONS: {str: [pg.Surface]} = dict()
 
     SHIPS_AMOUNT = len([f for f in os.listdir("./resources/images/ship") if "raw" not in f])
     ROCKETS_AMOUNT = len([f for f in os.listdir("./resources/images/rocket")
@@ -38,7 +38,7 @@ class Image:
         return Image._MENU
 
     @staticmethod
-    def get_ship(with_fire: bool) -> pg.Surface:
+    def get_ship(model: int, with_fire: bool) -> pg.Surface:
         if Image._SHIPS is None:
             Image._SHIPS = []
             for x in range(Image.SHIPS_AMOUNT):
@@ -46,7 +46,7 @@ class Image:
                     pg.image.load(f"{Image._ROOT}/ship/{x}/normal.{Conf.Image.Format.SPRITE}").convert_alpha(),
                     pg.image.load(f"{Image._ROOT}/ship/{x}/fire.{Conf.Image.Format.SPRITE}").convert_alpha()
                 ])
-        return Image._SHIPS[Conf.Image.SHIP][1 if with_fire else 0]
+        return Image._SHIPS[model][1 if with_fire else 0]
 
     @staticmethod
     def get_meteors():
@@ -60,13 +60,13 @@ class Image:
         return Image._METEORS
 
     @staticmethod
-    def get_rocket() -> pg.Surface:
+    def get_rocket(model: int) -> pg.Surface:
         if Image._ROCKETS is None:
             Image._ROCKETS = []
             for x in range(Image.ROCKETS_AMOUNT):
                 Image._ROCKETS.append(pg.image.load(
                     f"{Image._ROOT}/rocket/{x}.{Conf.Image.Format.SPRITE}").convert_alpha())
-        return Image._ROCKETS[Conf.Image.ROCKET]
+        return Image._ROCKETS[model]
 
     @staticmethod
     def get_life() -> pg.Surface:
@@ -107,8 +107,8 @@ class Image:
             print("Caching started ...")
             t = time_ns()
             Image.get_menu()
-            Image.get_ship(True)
-            Image.get_rocket()
+            Image.get_ship(0, True)
+            Image.get_rocket(0)
             Image.get_life()
             Image.get_background()
             Image.get_meteors()

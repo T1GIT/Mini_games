@@ -10,17 +10,18 @@ from utils.resources.image import Image as Img
 from utils.resources.sound import Sound as Snd
 
 
-class Ship(Shootable, Rotatable, Acceleratable, Bound.Resistable, TextureUpdatable):
+class Ship(TextureUpdatable, Shootable, Acceleratable, Bound.Resistable):
     """
     Class of the player's mob
     Can shooting rockets
     Can by destroyed by meteors
     """
-    _accuracy = 50 / Conf.Control.Mouse.ACCURACY
+    texture_num = Conf.Image.SHIP
+    needs_update = False
 
     def __init__(self):
-        self.texture_normal = Img.scale(Img.get_ship(False), Conf.Ship.SIZE)
-        self.texture_fire = Img.scale(Img.get_ship(True), Conf.Ship.SIZE)
+        self.texture_normal = Img.scale(Img.get_ship(Ship.texture_num, False), Conf.Ship.SIZE)
+        self.texture_fire = Img.scale(Img.get_ship(Ship.texture_num, True), Conf.Ship.SIZE)
         super().__init__(texture=self.texture_normal)
         # Variables
         self.with_fire = False
@@ -32,10 +33,9 @@ class Ship(Shootable, Rotatable, Acceleratable, Bound.Resistable, TextureUpdatab
         period to it's coordinates
         Called every frame.
         """
-        if self.needs_update:
-            self.update_texture(Img.get_ship(self.with_fire), Conf.Ship.SIZE)
+        if Ship.needs_update:
+            self.update_texture(Img.get_ship(Ship.texture_num, self.with_fire), Conf.Ship.SIZE)
             self.vector_rotate(1, tan(self.angle), False)
-            Ship.needs_update = False
         if abs(self.speed_x) < Conf.Ship.DEAD_SPEED and abs(self.speed_y) < Conf.Ship.DEAD_SPEED:
             self.speed_x, self.speed_y = 0, 0
         else:
@@ -77,11 +77,6 @@ class Ship(Shootable, Rotatable, Acceleratable, Bound.Resistable, TextureUpdatab
             if with_fire: Snd.engine()
 
     def update_texture(self, raw_texture: pg.Surface, size: float) -> None:
-        self.texture_normal = Img.scale(Img.get_ship(False), size)
-        self.texture_fire = Img.scale(Img.get_ship(True), size)
+        self.texture_normal = Img.scale(Img.get_ship(Ship.texture_num, False), size)
+        self.texture_fire = Img.scale(Img.get_ship(Ship.texture_num, True), size)
         super().update_texture(raw_texture, size)
-
-    @staticmethod
-    def set_texture(num: int):
-        Conf.Image.SHIP = num
-        Ship.needs_update = True

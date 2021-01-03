@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from math import hypot, atan2, cos, sin
 
 import pygame as pg
@@ -11,29 +10,82 @@ class Sprite(pg.sprite.Sprite):
     def __init__(self, texture: pg.Surface):
         super().__init__()
         self.texture: pg.Surface = texture
-        self.pos_x: float = 0
-        self.pos_y: float = 0
+        self.image = texture
+
+    def set_texture(self, texture: pg.Surface):
+        self.texture = texture
         self.image = texture
 
 
-class TextureUpdatable(Sprite, ABC):
-    needs_update: bool = False
+class TextureUpdatable(Sprite):
+    needs_update: bool
+    texture_num: int
 
     def update_texture(self, raw_texture: pg.Surface, size: float) -> None:
-        self.texture = Img.scale(raw_texture, size)
-        self.image = self.texture
+        super().set_texture(Img.scale(raw_texture, size))
+        type(self).needs_update = False
 
-    @staticmethod
-    @abstractmethod
-    def set_texture(num: int) -> None:
-        pass
+    @classmethod
+    def set_texture_num(cls, num: int) -> None:
+        cls.texture_num = num
+        cls.needs_update = True
 
 
 class Locatable(Sprite):
-    def locate(self, x, y) -> None:
-        self.rect = self.image.get_rect(center=(x, y))
+    def __init__(self, texture: pg.Surface):
+        super().__init__(texture)
+        self.pos_x: float = 0
+        self.pos_y: float = 0
+
+    def locate(self, x: float = None, y: float = None, **kwargs) -> None:
+        if x is None or y is None:
+            self.rect = self.image.get_rect(**kwargs)
+        else:
+            self.rect = self.image.get_rect(center=(x, y))
         self.pos_x = self.rect.x
         self.pos_y = self.rect.y
+
+
+class Transparent(Locatable):
+    def __init__(self, texture: pg.Surface, opacity: int = 100):
+        texture.set_alpha(opacity)
+        super().__init__(texture)
+        self.opacity = opacity
+
+    def set_opacity(self, opacity: int):
+        self.opacity = opacity
+        self.texture.set_alpha(opacity)
+
+    def get_opacity(self) -> int:
+        return self.opacity
+
+    def set_texture(self, texture: pg.Surface):
+        texture.set_alpha(self.opacity)
+        super().set_texture(texture)
+
+
+class Text(Locatable):
+    def __init__(self, font: pg.font.Font, color: tuple[int, int, int], value: object = ""):
+        super().__init__(
+            texture=font.render("resources/fonts/opensans.ttf", True, color)
+        )
+        self._args: dict = {}
+        self.font: pg.font.Font = font
+        self.color: tuple[int, int, int] = color
+        self.value: str = str(value)
+        self._text_needs_update: bool = False
+
+    def locate(self, x: float = None, y: float = None, **kwargs) -> None:
+        super().locate()
+        self._args = dict(x=x, y=y, **kwargs)
+
+    def set_value(self, value: object):
+        self.value = str(value)
+        super().set_texture(self.font.render(self.value, True, self.color))
+        super().locate(**self._args)
+
+    def get_value(self) -> str:
+        return self.value
 
 
 class Movable(Locatable):
@@ -104,3 +156,7 @@ class Rotatable(Movable):
         self.pos_y = self.rect.y + y_offset
 
 
+class Group(pg.sprite.Group):
+    def kill(self):
+        for sprite in self:
+            sprite.kill()

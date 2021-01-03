@@ -1,8 +1,6 @@
 import pygame_menu
-import os.path
-import pygame as pg
 
-from components.resetable import Resetable
+from components.interfaces.resetable import Resetable
 from components.game import Game
 from components.overlay import Overlay
 from config import Configuration as Conf
@@ -13,7 +11,6 @@ from utils.mechanics.spawner import Spawner
 from utils.resources.image import Image as Img
 from utils.listener.listener import EventListener
 from utils.resources.sound import Sound as Snd
-from utils.tools.exceptions import NewGameException
 
 
 class Menu(Resetable):
@@ -112,7 +109,7 @@ class Menu(Resetable):
                 ("Yes", True)
             ], font_color=Conf.Menu.FONT_COLOR,
             default=1 if Conf.Overlay.Framerate.VISIBLE else 0,
-            onchange=lambda _, value: Overlay.fps_toggle(value)
+            onchange=lambda _, value: Overlay.Framerate.toggle(value)
         )
         menu.add_label("Game settings")
         menu.add_selector(
@@ -133,14 +130,14 @@ class Menu(Resetable):
         menu.add_selector(
             f'Ship:  ',
             items=[(str(i), i) for i in range(Img.SHIPS_AMOUNT)],
-            default=Conf.Image.SHIP, font_color=Conf.Menu.FONT_COLOR,
-            onchange=lambda _, value: Ship.set_texture(value)
+            default=Ship.texture_num, font_color=Conf.Menu.FONT_COLOR,
+            onchange=lambda _, value: Ship.set_texture_num(value)
         )
         menu.add_selector(
             f'Rocket:  ',
             items=[(str(i), i) for i in range(Img.ROCKETS_AMOUNT)],
-            default=Conf.Image.ROCKET, font_color=Conf.Menu.FONT_COLOR,
-            onchange=lambda _, value: Rocket.set_texture(value)
+            default=Rocket.texture_num, font_color=Conf.Menu.FONT_COLOR,
+            onchange=lambda _, value: Rocket.set_texture_num(value)
         )
         menu.add_label("Volume")
         menu.add_selector(
@@ -198,7 +195,7 @@ class Menu(Resetable):
         menu.add_button('     Play     ', self.window.start, font_size=60, margin=(0, 50))
         menu.add_button('   Settings   ', settings)
         menu.add_button('     Info     ', about)
-        menu.add_button('     Exit     ', lambda: exit())
+        menu.add_button('     Exit     ', self.window.exit)
         # Sound
         self.engine.set_sound(pygame_menu.sound.SOUND_TYPE_CLICK_MOUSE, Snd.click(),
                               volume=Snd.get_volume(Conf.Sound.Volume.SFX))
@@ -213,11 +210,8 @@ class Menu(Resetable):
                 self.window.toggle_menu()
 
     def open(self):
-        pg.mixer.stop()
-        Snd.bg_menu()
+        self.menu_main = self.create_menu(self.menu_settings, self.menu_about)
         self.menu_main.mainloop(self.window.screen, bgfun=lambda: self.event_handler(EventListener.get_events()))
 
     def close(self):
-        pg.mixer.stop()
-        Snd.bg_game()
         self.menu_main.disable()
