@@ -48,6 +48,8 @@ class Window(Resetable):
 
     def toggle_menu(self):
         if self.started and self.escape_timer.is_ready():
+            if not self.paused and self.comp_game.game_over:
+                self.reset()
             self.paused = not self.paused
             self.toggle_mouse(self.paused)
             self.escape_timer.start()

@@ -89,12 +89,21 @@ class Overlay(Resetable):
         def show(self) -> None:
             cnf = Conf.Overlay.Health
             super().locate()
-            for i, point in enumerate(self.points_group):
-                point.locate(topleft=(cnf.X_OFFSET + (i * cnf.SIZE) + (i * cnf.MARGIN), cnf.Y_OFFSET))
+            for pos, point in enumerate(self.points_group):
+                point.locate(topleft=(cnf.X_OFFSET + (pos * cnf.SIZE) + (pos * cnf.MARGIN), cnf.Y_OFFSET))
 
         def down(self, amount: int) -> None:
             for _ in range(amount):
                 self.points_group.sprites()[-1].kill()
+
+        def up(self, amount: int) -> None:
+            cnf = Conf.Overlay.Health
+            for _ in range(amount):
+                point = Overlay.Health.Life(self.texture)
+                self.points_group.add(point)
+                point.add(Groups.LIFES, Groups.ALL)
+                pos = len(self.points_group) - 1
+                point.locate(topleft=(cnf.X_OFFSET + (pos * cnf.SIZE) + (pos * cnf.MARGIN), cnf.Y_OFFSET))
 
         def is_dead(self) -> bool:
             return len(self.points_group) == 0

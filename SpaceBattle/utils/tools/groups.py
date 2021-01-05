@@ -9,3 +9,4 @@ class Groups:
     LIFES = Group()
     OVERLAY = Group()
     ANIMATION = Group()
+    HEALS = Group()

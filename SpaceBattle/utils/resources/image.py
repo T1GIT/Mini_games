@@ -21,6 +21,7 @@ class Image:
     _PIECES: [pg.Surface] = None
     _MENU: [pygame_menu.baseimage] = None
     _LIFE: pg.Surface = None
+    _HEAL: pg.Surface = None
     _ANIMATIONS: {str: [pg.Surface]} = dict()
 
     SHIPS_AMOUNT = len([f for f in os.listdir("./resources/images/ship") if "raw" not in f])
@@ -75,6 +76,13 @@ class Image:
         return Image._LIFE
 
     @staticmethod
+    def get_heal() -> pg.Surface:
+        if Image._HEAL is None:
+            Image._HEAL = pg.image.load(
+                f"{Image._ROOT}/loot/heal/{Conf.Image.HEAL}.{Conf.Image.Format.SPRITE}").convert_alpha()
+        return Image._HEAL
+
+    @staticmethod
     def get_background() -> pg.Surface:
         if Image._BACKGROUND is None:
             Image._BACKGROUND = pg.image.load(
@@ -109,6 +117,7 @@ class Image:
             Image.get_ship(True)
             Image.get_rocket(0)
             Image.get_life()
+            Image.get_heal()
             Image.get_background()
             Image.get_meteors()
             Image.get_animation("ship")

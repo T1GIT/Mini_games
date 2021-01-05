@@ -11,6 +11,22 @@ from utils.tools.groups import Groups
 
 class Collider:
     @staticmethod
+    def ship_heals(ship: Ship):
+        """
+        Checks the collision of a meteor and a ship.
+        Causes an explosion animation if a collision occurs
+        """
+        touched = pg.sprite.spritecollide(ship, Groups.HEALS, False)
+        result = 0
+        for heal in touched:
+            if Collider.collide_by_mask(ship, heal):
+                Snd.heal()
+                # Animation.on_sprite("heal", meteor, max(meteor.rect.size)) TODO: add animation
+                heal.kill()
+                result += 1
+        return result
+
+    @staticmethod
     def ship_meteors(ship: Ship):
         """
         Checks the collision of a meteor and a ship.

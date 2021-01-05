@@ -7,18 +7,16 @@ from sprites.interfaces.bound import Bound
 from utils.resources.image import Image as Img
 
 
-class Piece(Bound.Killable):
+class Heal(Bound.Killable):
     """
     Class of the moving Pieces background
     Moves all the time
     """
 
     def __init__(self):
-        cnf = Conf.Piece
-        texture = Img.scale(rnd.choice(Img.get_pieces()), rnd.randint(cnf.MIN_SIZE, cnf.MAX_SIZE))
-        texture.set_alpha(rnd.randint(Conf.Piece.MIN_OPACITY, Conf.Piece.MAX_OPACITY))
+        cnf = Conf.Heal
         super().__init__(
-            texture=texture,
+            texture=Img.scale(Img.get_heal(), cnf.SIZE),
             speed_x=rnd.uniform(-cnf.MAX_SPEED, cnf.MAX_SPEED),
             speed_y=rnd.uniform(-cnf.MAX_SPEED, cnf.MAX_SPEED)
         )

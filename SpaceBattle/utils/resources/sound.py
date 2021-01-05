@@ -63,6 +63,11 @@ class Sound:
         Sound._SHOOT.play()
 
     @staticmethod
+    def heal():
+        pass
+        # TODO: TODO
+
+    @staticmethod
     def wound():
         if Sound._WOUND is None:
             Sound._WOUND = pg.mixer.Sound(f'{Sound._ROOT}/sfx/wound.{Conf.Sound.FORMAT}')

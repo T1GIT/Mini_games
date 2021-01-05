@@ -10,12 +10,12 @@ class Configuration:
 
     class Window:
         TITLE = "Space Battle"
-        FULLSCREEN = True
+        FULLSCREEN = False
         WIDTH = 1000
         HEIGHT = 1000
 
     class Game:
-        LOSE_DELAY = 3 * 1000  # ms
+        LOSE_DELAY = 9 * 1000  # ms
         DIFFICULTY = [
                     ("novice", (1100, 10)),
                     ("easy", (900, 20)),
@@ -61,14 +61,6 @@ class Configuration:
             Y_OFFSET = 40
             SIZE = 60
 
-    class Piece:
-        MIN_OPACITY = 60  # [0, 100]
-        MAX_OPACITY = 90  # [0, 100]
-        MIN_SIZE = 200  # px
-        MAX_SIZE = 500  # px
-        MAX_SPEED = 1
-        QUANTITY = 5
-
     class Ship:
         SIZE = 150
         WEIGHT = 5
@@ -100,13 +92,27 @@ class Configuration:
         MAX_DISTANCE = 300  # px  (needs Rocket.UNLIMITED = False)
         UNLIMITED = True
 
+    class Piece:
+        MIN_OPACITY = 60  # [0, 100]
+        MAX_OPACITY = 90  # [0, 100]
+        MIN_SIZE = 200  # px
+        MAX_SIZE = 500  # px
+        MAX_SPEED = 1
+        QUANTITY = 5
+
     class Animation:
         DEFAULT_SIZE = 200
         FPS = 40
 
+    class Heal:
+        SIZE = 50
+        MAX_SPEED = 5
+        PERIOD = 5000
+
     class Image:
         SHIP = 0
         LIFE = 0
+        HEAL = 0
         ROCKET = 0
         MENU_BG = 0
         STATIC_BG = 0
@@ -146,6 +152,11 @@ class Configuration:
 
     class Rules:
         LIFES = 3
+
+    @staticmethod
+    def change_fps(value: int):
+        Configuration.System.FPS = value
+        Configuration.System.SCALE = Configuration.System.GAME_SPEED / value
 
     # Checking parameters
     assert Game.LOSE_DELAY > 0

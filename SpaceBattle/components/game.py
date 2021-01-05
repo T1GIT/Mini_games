@@ -25,7 +25,7 @@ class Game(Resetable):
     def __init__(self, window):
         # Environment
         self.window = window
-        self.game_over_flag: bool = False
+        self.game_over: bool = False
         self.clock: pg.time.Clock = pg.time.Clock()
         self.running: bool = False
         # Components
@@ -34,6 +34,7 @@ class Game(Resetable):
         self.ship: Ship = Ship()
         # Timers
         self.meteor_timer = Timer(Conf.Meteor.PERIOD)
+        self.heal_timer = Timer(Conf.Heal.PERIOD)
         self.losing_timer = Timer(Conf.Game.LOSE_DELAY)
         self.frames_timer = Timer(Conf.Overlay.Framerate.PERIOD)
         # Background
@@ -49,16 +50,17 @@ class Game(Resetable):
         Groups.METEORS.kill()
         Groups.ROCKETS.kill()
         Groups.PIECES.kill()
+        Groups.HEALS.kill()
         self.ship.kill()
         self.ship = Ship()
-        self.game_over_flag = False
+        self.game_over = False
         self.running = False
 
     def start(self):
         """
         Starts the game
         """
-        self.game_over_flag = False
+        self.game_over = False
         self.comp_overlay.show()
         self.ship.add(Groups.ALL)
         self.ship.locate(Conf.Window.WIDTH // 2, Conf.Window.HEIGHT // 2)
@@ -70,13 +72,13 @@ class Game(Resetable):
         self.mainloop()
 
     def lose(self):
-        if not self.game_over_flag:
+        if not self.game_over:
             self.comp_overlay.health.down(self.comp_overlay.health.get_lifes())
             Snd.ex_ship()
             Animation.on_sprite("ship", self.ship, max(self.ship.rect.size) * Conf.Ship.ANIM_SCALE)
             self.ship.kill()
             self.losing_timer.start()
-            self.game_over_flag = True
+            self.game_over = True
             Snd.game_over()
 
     def event_handler(self, events: [Event]):
@@ -101,18 +103,18 @@ class Game(Resetable):
             if event.get_data() in (Kb.Keys.A, Kb.Keys.LEFT):     x -= 1
             if event.get_data() in (Kb.Keys.S, Kb.Keys.DOWN):     y -= 1
             if event.get_data() in (Kb.Keys.D, Kb.Keys.RIGHT):    x += 1
-            if event.get_data() == Kb.Keys.ESC: self.window.toggle_menu()
-            if event.get_data() == Kb.Keys.SPACE: kb_self_distract[0] = True
-            if event.get_data() == Kb.Keys.ENTER: kb_self_distract[1] = True
+            if event.get_data() == Kb.Keys.ESC:     self.window.toggle_menu()
+            if event.get_data() == Kb.Keys.SPACE:   kb_self_distract[0] = True
+            if event.get_data() == Kb.Keys.ENTER:   kb_self_distract[1] = True
         for event in events.get(Dvc.GAMEPAD, ()):
             if event.get_type() == Gp.Events.LS:    x, y = event.get_data()
             if event.get_type() == Gp.Events.RS:    self.ship.vector_rotate(*event.get_data(), False)
             if event.get_type() == Gp.Events.KEY:
-                if event.get_data() == Gp.Keys.RT: shoot = True
-                if event.get_data() == Gp.Keys.START: self.window.toggle_menu()
-                if event.get_data() == Gp.Keys.LS: gp_self_distract[0] = True
-                if event.get_data() == Gp.Keys.RS: gp_self_distract[1] = True
-        if not self.game_over_flag:
+                if event.get_data() == Gp.Keys.RT:      shoot = True
+                if event.get_data() == Gp.Keys.START:   self.window.toggle_menu()
+                if event.get_data() == Gp.Keys.LS:      gp_self_distract[0] = True
+                if event.get_data() == Gp.Keys.RS:      gp_self_distract[1] = True
+        if not self.game_over:
             # Checking self-destruction
             if kb_self_distract == [True, True] or gp_self_distract == [True, True]:
                 self.lose()
@@ -124,48 +126,54 @@ class Game(Resetable):
 
     def mainloop(self):
         while self.running:
-            events = EventListener.get_events()
-            if self.game_over_flag: events = {Dvc.SYSTEM: events[Dvc.SYSTEM]}
-            self.event_handler(events)
-            pg.event.get()
-            Groups.ALL.update()
-            self.window.screen.blit(self.background, self.background.get_rect())
-            Groups.ALL.draw(self.window.screen)
-            pg.display.flip()
-            self.preparation()
+            self.event_processing()
+            self.updating()
+            # Checking losing
+            if self.game_over:
+                if self.losing_timer.is_ready():
+                    self.running = False
+            elif self.comp_overlay.health.is_dead():
+                self.lose()
+            # Actions
+            self.colliding()
+            self.spawning()
+            self.refreshing_framerate()
             self.clock.tick(Conf.System.FPS)
 
-    def preparation(self):
-        """
-        Do all actions per one frame
-        """
-        # Colliding
-        if not self.game_over_flag:
-            if self.comp_overlay.health.is_dead():
-                self.lose()
-            else:
-                hits = Collider.rockets_meteors()
-                wounds = Collider.ship_meteors(self.ship)
-                self.comp_overlay.score.up(hits)
-                self.comp_overlay.health.down(wounds)
-        # Spawning
+    def event_processing(self):
+        events = EventListener.get_events()
+        self.event_handler(events)
+        pg.event.get()
+
+    def updating(self):
+        Groups.ALL.update()
+        self.window.screen.blit(self.background, self.background.get_rect())
+        Groups.ALL.draw(self.window.screen)
+        pg.display.flip()
+
+    def colliding(self):
+        hits = Collider.rockets_meteors()
+        self.comp_overlay.score.up(hits)
+        if not self.game_over:
+            wounds = Collider.ship_meteors(self.ship)
+            self.comp_overlay.health.down(wounds)
+            heals = Collider.ship_heals(self.ship)
+            self.comp_overlay.health.up(heals)
+
+
+    def spawning(self):
         if Conf.Meteor.BY_TIME:
             if self.meteor_timer.is_ready():
-                self.meteor_timer.start()
                 Spawner.meteor()
+                self.meteor_timer.start()
         else: Spawner.all_meteors()
         Spawner.all_pieces(False)
-        # Refreshing framerate
+        if self.heal_timer.is_ready():
+            Spawner.heal()
+            self.heal_timer.start()
+
+    def refreshing_framerate(self):
         self.comp_overlay.framerate.add_frame()
-        if self.frames_timer.is_ready() and Conf.Overlay.Framerate.VISIBLE:
+        if Conf.Overlay.Framerate.VISIBLE and self.frames_timer.is_ready():
             self.frames_timer.start()
             self.comp_overlay.framerate.refresh()
-        # Checking death
-        if self.game_over_flag:
-            if self.losing_timer.is_ready():
-                self.running = False
-
-    @staticmethod
-    def change_fps(value: int):
-        Conf.System.FPS = value
-        Conf.System.SCALE = Conf.System.GAME_SPEED / value

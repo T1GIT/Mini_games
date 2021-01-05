@@ -101,7 +101,7 @@ class Menu(Resetable):
                 ("120", 120)
             ], font_color=Conf.Menu.FONT_COLOR,
             default=Conf.System.FPS // 30 - 1,
-            onchange=lambda _, value: Game.change_fps(value)
+            onchange=lambda _, value: Conf.change_fps(value)
         )
         menu.add_selector(
             f'Show:  ', items=[
