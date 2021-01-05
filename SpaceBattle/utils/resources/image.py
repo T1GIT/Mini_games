@@ -37,15 +37,15 @@ class Image:
         return Image._MENU
 
     @staticmethod
-    def get_ships() -> np.ndarray:
+    def get_ship(with_fire: bool) -> pg.Surface:
         if Image._SHIPS is None:
-            pack = []
-            path = f"{Image._ROOT}/ship"
+            Image._SHIPS = []
             for x in range(Image.SHIPS_AMOUNT):
-                pack.append(pg.image.load(f"{path}/{x}/normal.{Conf.Image.Format.SPRITE}").convert_alpha())
-                pack.append(pg.image.load(f"{path}/{x}/fire.{Conf.Image.Format.SPRITE}").convert_alpha())
-            Image._SHIPS = Image.get_cache_angles(pack, [Conf.Ship.SIZE])
-        return Image._SHIPS
+                Image._SHIPS.append([
+                    pg.image.load(f"{Image._ROOT}/ship/{x}/normal.{Conf.Image.Format.SPRITE}").convert_alpha(),
+                    pg.image.load(f"{Image._ROOT}/ship/{x}/fire.{Conf.Image.Format.SPRITE}").convert_alpha()
+                ])
+        return Image._SHIPS[Conf.Image.SHIP][1 if with_fire else 0]
 
     @staticmethod
     def get_meteors() -> np.ndarray:
@@ -106,7 +106,7 @@ class Image:
             print("Caching started ...")
             t = time_ns()
             Image.get_menu()
-            Image.get_ships()
+            Image.get_ship(True)
             Image.get_rocket(0)
             Image.get_life()
             Image.get_background()

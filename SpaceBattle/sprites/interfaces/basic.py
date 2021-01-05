@@ -377,6 +377,10 @@ class AcceleratableWithFire(Acceleratable):
         if with_fire != self.with_fire:
             self.with_fire = with_fire
             self.texture = self.texture_pack[1] if with_fire else self.texture_pack[0]
+            if isinstance(self, Rotatable):
+                self.rotate()
+            else:
+                self.image = self.texture
             self.rect = self.image.get_rect(center=self.rect.center)
 
     def set_texture(self, texture_pack: tuple[pg.Surface, pg.Surface]) -> None:

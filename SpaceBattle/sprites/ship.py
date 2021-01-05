@@ -21,8 +21,8 @@ class Ship(AcceleratableWithFire, TextureUpdatable, Shootable, Bound.Stopable, R
 
     def __init__(self):
         texture_pack = (
-            Img.scale(Img.get_cache_by_angle(Img.get_ships(), Ship.texture_num * 2, 0, 0), Conf.Ship.SIZE),
-            Img.scale(Img.get_cache_by_angle(Img.get_ships(), Ship.texture_num * 2 + 1, 0, 0), Conf.Ship.SIZE)
+                           Img.scale(Img.get_ship(False), Conf.Ship.SIZE),
+                           Img.scale(Img.get_ship(True), Conf.Ship.SIZE)
         )
         AcceleratableWithFire.__init__(
             self,
@@ -31,10 +31,7 @@ class Ship(AcceleratableWithFire, TextureUpdatable, Shootable, Bound.Stopable, R
             power=Conf.Ship.POWER,
             resist=Conf.Ship.RESIST
         )
-        Rotatable.__init__(
-            self, texture_pack[0],
-            rotator=lambda x: Img.get_cache_by_angle(Img.get_ships(), self.model, self.size, round(x - 90))
-        )
+        Rotatable.__init__(self, texture_pack[0])
         Shootable.__init__(self, texture_pack[0])
         Bound.Stopable.__init__(self, texture_pack[0])
 
@@ -45,8 +42,7 @@ class Ship(AcceleratableWithFire, TextureUpdatable, Shootable, Bound.Stopable, R
         period to it's coordinates
         """
         if Ship.needs_update:
-            self.update_texture(Img.scale(Img.get_cache_by_angle(Img.get_ships(), (
-                    Ship.texture_num * 2 + (1 if self.with_fire else 0)), 0, 0), Conf.Ship.SIZE))
+            self.update_texture(Img.scale(Img.get_ship(self.with_fire), Conf.Ship.SIZE))
             self.vector_rotate(1, tan(self.angle), False)
         if hypot(self.speed_x, self.speed_y) < Conf.Ship.DEAD_SPEED:
             self.speed_x, self.speed_y = 0, 0
@@ -84,7 +80,7 @@ class Ship(AcceleratableWithFire, TextureUpdatable, Shootable, Bound.Stopable, R
 
     def update_texture(self, texture: pg.Surface) -> None:
         super().set_texture((
-            Img.scale(Img.get_cache_by_angle(Img.get_ships(), Ship.texture_num * 2, 0, 0), Conf.Ship.SIZE),
-            Img.scale(Img.get_cache_by_angle(Img.get_ships(), Ship.texture_num * 2 + 1, 0, 0), Conf.Ship.SIZE)
+            Img.scale(Img.get_ship(False), Conf.Ship.SIZE),
+            Img.scale(Img.get_ship(True), Conf.Ship.SIZE)
         ))
         super().update_texture(texture)
