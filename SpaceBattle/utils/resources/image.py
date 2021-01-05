@@ -26,8 +26,8 @@ class Image:
     SHIPS_AMOUNT = len([f for f in os.listdir("./resources/images/ship") if "raw" not in f])
     ROCKETS_AMOUNT = len([f for f in os.listdir("./resources/images/rocket")
                           if "raw" not in f and os.path.isfile(os.path.join("./resources/images/rocket", f))])
-    _METEORS_AMOUNT = len([f for f in os.listdir("./resources/images/meteor")
-                           if "raw" not in f and os.path.isfile(os.path.join("./resources/images/meteor", f))])
+    METEORS_AMOUNT = len([f for f in os.listdir("./resources/images/meteor")
+                          if "raw" not in f and os.path.isfile(os.path.join("./resources/images/meteor", f))])
 
     @staticmethod
     def get_menu() -> pygame_menu.baseimage.BaseImage:
@@ -37,22 +37,22 @@ class Image:
         return Image._MENU
 
     @staticmethod
-    def get_ship(model: int, with_fire: bool) -> pg.Surface:
+    def get_ships() -> np.ndarray:
         if Image._SHIPS is None:
-            Image._SHIPS = []
+            pack = []
+            path = f"{Image._ROOT}/ship"
             for x in range(Image.SHIPS_AMOUNT):
-                Image._SHIPS.append([
-                    pg.image.load(f"{Image._ROOT}/ship/{x}/normal.{Conf.Image.Format.SPRITE}").convert_alpha(),
-                    pg.image.load(f"{Image._ROOT}/ship/{x}/fire.{Conf.Image.Format.SPRITE}").convert_alpha()
-                ])
-        return Image._SHIPS[model][1 if with_fire else 0]
+                pack.append(pg.image.load(f"{path}/{x}/normal.{Conf.Image.Format.SPRITE}").convert_alpha())
+                pack.append(pg.image.load(f"{path}/{x}/fire.{Conf.Image.Format.SPRITE}").convert_alpha())
+            Image._SHIPS = Image.get_cache_angles(pack, [Conf.Ship.SIZE])
+        return Image._SHIPS
 
     @staticmethod
-    def get_meteors():
+    def get_meteors() -> np.ndarray:
         if Image._METEORS is None:
             pack = []
             path = f"{Image._ROOT}/meteor"
-            for x in range(Image._METEORS_AMOUNT):
+            for x in range(Image.METEORS_AMOUNT):
                 pack.append(pg.image.load(f"{path}/{x}.{Conf.Image.Format.SPRITE}").convert_alpha())
             cnf = Conf.Meteor
             Image._METEORS = Image.get_cache_angles(pack, list(np.linspace(cnf.MIN_SIZE, cnf.MAX_SIZE, cnf.SIZES)))
@@ -106,7 +106,7 @@ class Image:
             print("Caching started ...")
             t = time_ns()
             Image.get_menu()
-            Image.get_ship(0, True)
+            Image.get_ships()
             Image.get_rocket(0)
             Image.get_life()
             Image.get_background()

@@ -38,15 +38,20 @@ class Overlay(Resetable):
 
     class Score(Text, Transparent):
         def __init__(self):
-            super().__init__(
+            Text.__init__(
+                self,
                 font=pg.font.Font("resources/fonts/opensans.ttf", Conf.Overlay.Score.SIZE),
                 color=Conf.Overlay.Score.COLOR,
                 value="0"
             )
-            super().set_opacity(Conf.Overlay.OPACITY)
+            Transparent.__init__(
+                self,
+                texture=self.texture,
+                opacity=Conf.Overlay.OPACITY
+            )
 
         def reset(self) -> None:
-            self.__init__()
+            super().set_value(0)
 
         def get_score(self) -> int:
             return int(super().get_value())
@@ -103,12 +108,17 @@ class Overlay(Resetable):
 
     class Framerate(Text, Transparent, Resetable):
         def __init__(self):
-            super().__init__(
+            Text.__init__(
+                self,
                 font=pg.font.Font("resources/fonts/opensans.ttf", Conf.Overlay.Framerate.SIZE),
                 color=Conf.Overlay.Framerate.COLOR,
                 value=""
             )
-            super().set_opacity(Conf.Overlay.OPACITY)
+            Transparent.__init__(
+                self,
+                texture=self.texture,
+                opacity=Conf.Overlay.OPACITY
+            )
             self.amount_frames: int = 0
             self.last_time: int = 0
 

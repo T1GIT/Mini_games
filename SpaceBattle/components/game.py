@@ -72,6 +72,7 @@ class Game(Resetable):
 
     def lose(self):
         if not self.game_over_flag:
+            self.comp_overlay.health.down(self.comp_overlay.health.get_lifes())
             Snd.ex_ship()
             Animation.on_sprite("ship", self.ship, max(self.ship.rect.size) * Conf.Ship.ANIM_SCALE)
             self.ship.kill()
@@ -121,7 +122,7 @@ class Game(Resetable):
                 self.rocket_timer.start()
                 self.ship.shoot()
             # Moving
-            self.ship.vector_accelerate(x, y)
+            self.ship.accelerate(x, -y)
 
     def mainloop(self):
         while self.running:

@@ -23,7 +23,8 @@ class Meteor(Rotatable, Bound.Teleportable, Bound.Killable):
         super().__init__(
             texture=Img.get_cache_by_angle(Img.get_meteors(), self.model, self.size, 0),
             speed_x=rnd.uniform(-cnf.MAX_SPEED, Conf.Meteor.MAX_SPEED),
-            speed_y=rnd.uniform(-cnf.MAX_SPEED, Conf.Meteor.MAX_SPEED)
+            speed_y=rnd.uniform(-cnf.MAX_SPEED, Conf.Meteor.MAX_SPEED),
+            rotator=lambda x: Img.get_cache_by_angle(Img.get_meteors(), self.model, self.size, round(x))
         )
         # Variables
         self.angle_speed = rnd.uniform(-cnf.MAX_ROTATE_SPEED, cnf.MAX_ROTATE_SPEED)
@@ -31,12 +32,9 @@ class Meteor(Rotatable, Bound.Teleportable, Bound.Killable):
     def update(self):
         super().move()
         if Conf.Meteor.ROTATING:
-            self.rotate(
-                delta_angle=self.angle_speed,
-                rotator=lambda x: Img.get_cache_by_angle(Img.get_meteors(), self.model, self.size, round(x))
-            )
+            self.rotate(self.angle_speed)
         if Conf.Meteor.TELEPORT:
-            super().teleport()
+            super().bound_teleport()
         else:
             super().bound_kill()
 

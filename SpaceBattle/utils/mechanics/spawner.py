@@ -52,7 +52,7 @@ class Spawner:
 
     class GetCoord:
         @staticmethod
-        def get_on_field():
+        def get_on_field() -> tuple[float, float]:
             """
             Get coordinates on field
             :return: horizontally and vertically position
@@ -62,7 +62,7 @@ class Spawner:
             return x, y
 
         @staticmethod
-        def get_out_field(x_size: int, y_size: int):
+        def get_out_field(x_size: float, y_size: float) -> tuple[float, float]:
             """
             Get coordinates out of field
             :param x_size: size of the object on x axis

@@ -25,8 +25,8 @@ class Rocket(Bound.Killable, Movable, TextureUpdatable):
     def shoot(self, x: float, y: float, deg: float):
         rad = radians(deg)
         super().set_speed(
-            x=Conf.Rocket.SPEED * cos(rad),
-            y=Conf.Rocket.SPEED * sin(rad)
+            speed_x=Conf.Rocket.SPEED * cos(rad),
+            speed_y=Conf.Rocket.SPEED * sin(rad)
         )
         self.start_center = (x, y)
         self.image = pg.transform.rotate(self.texture, -deg)
@@ -34,7 +34,7 @@ class Rocket(Bound.Killable, Movable, TextureUpdatable):
 
     def update(self):
         if Rocket.needs_update:
-            super().update_texture(Img.get_rocket(Rocket.texture_num), Conf.Rocket.SIZE)
+            super().update_texture(Img.scale(Img.get_rocket(Rocket.texture_num), Conf.Rocket.SIZE))
         super().move()
         if Conf.Rocket.UNLIMITED:
             super().bound_kill()
