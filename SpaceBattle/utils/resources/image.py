@@ -38,7 +38,7 @@ class Image:
         return Image._MENU
 
     @staticmethod
-    def get_ship(with_fire: bool) -> pg.Surface:
+    def get_ship(texture_num: int, with_fire: bool) -> pg.Surface:
         if Image._SHIPS is None:
             Image._SHIPS = []
             for x in range(Image.SHIPS_AMOUNT):
@@ -46,7 +46,7 @@ class Image:
                     pg.image.load(f"{Image._ROOT}/ship/{x}/normal.{Conf.Image.Format.SPRITE}").convert_alpha(),
                     pg.image.load(f"{Image._ROOT}/ship/{x}/fire.{Conf.Image.Format.SPRITE}").convert_alpha()
                 ])
-        return Image._SHIPS[Conf.Image.SHIP][1 if with_fire else 0]
+        return Image._SHIPS[texture_num][1 if with_fire else 0]
 
     @staticmethod
     def get_meteors() -> np.ndarray:
@@ -79,7 +79,7 @@ class Image:
     def get_heal() -> pg.Surface:
         if Image._HEAL is None:
             Image._HEAL = pg.image.load(
-                f"{Image._ROOT}/loot/heal/{Conf.Image.HEAL}.{Conf.Image.Format.SPRITE}").convert_alpha()
+                f"{Image._ROOT}/loot/heal.{Conf.Image.Format.SPRITE}").convert_alpha()
         return Image._HEAL
 
     @staticmethod
@@ -109,12 +109,12 @@ class Image:
         return Image._PIECES
 
     @staticmethod
-    def preload(func: callable):
+    def preload(callback: callable):
         def preload_inside():
             print("Caching started ...")
             t = time_ns()
             Image.get_menu()
-            Image.get_ship(True)
+            Image.get_ship(0, True)
             Image.get_rocket(0)
             Image.get_life()
             Image.get_heal()
@@ -124,7 +124,7 @@ class Image:
             Image.get_animation("meteor")
             Image.get_pieces()
             print(f"Caching took {round((time_ns() - t) / 1e6, 2)} ms")
-            func()
+            callback()
         Thread(target=preload_inside).start()
 
     @staticmethod

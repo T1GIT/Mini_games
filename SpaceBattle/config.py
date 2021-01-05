@@ -112,7 +112,6 @@ class Configuration:
     class Image:
         SHIP = 0
         LIFE = 0
-        HEAL = 0
         ROCKET = 0
         MENU_BG = 0
         STATIC_BG = 0
