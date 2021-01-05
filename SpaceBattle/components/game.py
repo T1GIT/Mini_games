@@ -3,8 +3,8 @@ import pygame as pg
 from components.interfaces.resetable import Resetable
 from components.overlay import Overlay
 from config import Configuration as Conf
-from sprites.animation import Animation
-from sprites.ship import Ship
+from sprites.effects.animation import Animation
+from sprites.player.ship import Ship
 from utils.listener.events import Keyboard as Kb, Gamepad as Gp, Mouse as Ms, Device as Dvc, System as Sys, Event
 from utils.listener.listener import EventListener
 from utils.mechanics.collider import Collider

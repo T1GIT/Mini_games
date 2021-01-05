@@ -3,7 +3,7 @@ from math import radians, cos, sin, hypot, atan2
 import pygame as pg
 
 from sprites.interfaces.basic import Rotatable, Movable
-from sprites.rocket import Rocket
+from sprites.player.rocket import Rocket
 from utils.tools.groups import Groups
 from utils.tools.timer import Timer
 
