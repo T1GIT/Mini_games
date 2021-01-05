@@ -50,11 +50,11 @@ class Window(tk.Tk):
             elif char == "escape": self.event_handler('exit')
 
     def win(self, win_char):
-        self.comp_win.show(win_char)
+        self.comp_win.open(win_char)
         self.comp_game.disable()
 
     def draw(self):
-        self.comp_win.show()
+        self.comp_win.open()
         self.comp_game.disable()
 
     def start(self, is_bot):

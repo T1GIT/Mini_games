@@ -15,7 +15,7 @@ class Configuration:
         HEIGHT = 1000
 
     class Game:
-        LOSE_DELAY = 900  # ms
+        LOSE_DELAY = 3 * 1000  # ms
         DIFFICULTY = [
                     ("novice", (1100, 10)),
                     ("easy", (900, 20)),
@@ -25,7 +25,7 @@ class Configuration:
                 ]
 
     class Overlay:
-        OPACITY = 90
+        OPACITY = 80
 
         class Framerate:
             VISIBLE = True
@@ -94,7 +94,7 @@ class Configuration:
 
     class Rocket:
         SIZE = 40  # px
-        SPEED = 20  # > 0
+        SPEED = 30  # > 0
         PERIOD = 200  # ms
         DESTROYABLE = True
         MAX_DISTANCE = 300  # px  (needs Rocket.UNLIMITED = False)
@@ -133,8 +133,8 @@ class Configuration:
 
         class Mouse:
             BUTTONS = 3
-            ACCURACY = 10  # [1; 10]
-            SMOOTH = 10  # >= 1
+            ACCURACY = 5  # [1; 10]
+            SMOOTH = 13  # >= 1
 
         class Stick:
             SENSITIVITY = 5  # [1; 10]

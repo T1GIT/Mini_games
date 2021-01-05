@@ -1,6 +1,6 @@
 import os
-import random as rnd
 from threading import Thread
+from time import time_ns
 
 import numpy as np
 import pygame as pg
@@ -14,20 +14,20 @@ class Image:
     Class containing objects' images, already prepared for using
     """
     _ROOT = "./resources/images"
-    _SHIPS = None
-    _ROCKETS = None
-    _METEORS = None
-    _BACKGROUND = None
-    _PIECES = None
-    _MENU = None
-    _LIFE = None
-    _ANIMATIONS = dict()
+    _SHIPS: [[pg.Surface]] = None
+    _ROCKETS: [pg.Surface] = None
+    _METEORS: np.ndarray = None
+    _BACKGROUND: pg.Surface = None
+    _PIECES: [pg.Surface] = None
+    _MENU: [pygame_menu.baseimage] = None
+    _LIFE: pg.Surface = None
+    _ANIMATIONS: {str: [pg.Surface]} = dict()
 
     SHIPS_AMOUNT = len([f for f in os.listdir("./resources/images/ship") if "raw" not in f])
     ROCKETS_AMOUNT = len([f for f in os.listdir("./resources/images/rocket")
                           if "raw" not in f and os.path.isfile(os.path.join("./resources/images/rocket", f))])
-    _METEORS_AMOUNT = len([f for f in os.listdir("./resources/images/meteor")
-                           if "raw" not in f and os.path.isfile(os.path.join("./resources/images/meteor", f))])
+    METEORS_AMOUNT = len([f for f in os.listdir("./resources/images/meteor")
+                          if "raw" not in f and os.path.isfile(os.path.join("./resources/images/meteor", f))])
 
     @staticmethod
     def get_menu() -> pygame_menu.baseimage.BaseImage:
@@ -48,24 +48,24 @@ class Image:
         return Image._SHIPS[Conf.Image.SHIP][1 if with_fire else 0]
 
     @staticmethod
-    def get_meteors():
+    def get_meteors() -> np.ndarray:
         if Image._METEORS is None:
             pack = []
             path = f"{Image._ROOT}/meteor"
-            for x in range(Image._METEORS_AMOUNT):
+            for x in range(Image.METEORS_AMOUNT):
                 pack.append(pg.image.load(f"{path}/{x}.{Conf.Image.Format.SPRITE}").convert_alpha())
             cnf = Conf.Meteor
             Image._METEORS = Image.get_cache_angles(pack, list(np.linspace(cnf.MIN_SIZE, cnf.MAX_SIZE, cnf.SIZES)))
         return Image._METEORS
 
     @staticmethod
-    def get_rocket() -> pg.Surface:
+    def get_rocket(model: int) -> pg.Surface:
         if Image._ROCKETS is None:
             Image._ROCKETS = []
             for x in range(Image.ROCKETS_AMOUNT):
                 Image._ROCKETS.append(pg.image.load(
                     f"{Image._ROOT}/rocket/{x}.{Conf.Image.Format.SPRITE}").convert_alpha())
-        return Image._ROCKETS[Conf.Image.ROCKET]
+        return Image._ROCKETS[model]
 
     @staticmethod
     def get_life() -> pg.Surface:
@@ -101,17 +101,21 @@ class Image:
         return Image._PIECES
 
     @staticmethod
-    def preload():
+    def preload(func: callable):
         def preload_inside():
+            print("Caching started ...")
+            t = time_ns()
             Image.get_menu()
             Image.get_ship(True)
-            Image.get_rocket()
+            Image.get_rocket(0)
             Image.get_life()
             Image.get_background()
             Image.get_meteors()
             Image.get_animation("ship")
             Image.get_animation("meteor")
             Image.get_pieces()
+            print(f"Caching took {round((time_ns() - t) / 1e6, 2)} ms")
+            func()
         Thread(target=preload_inside).start()
 
     @staticmethod

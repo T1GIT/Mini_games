@@ -5,8 +5,8 @@ from sprites.animation import Animation
 from sprites.meteor import Meteor
 from sprites.rocket import Rocket
 from sprites.ship import Ship
-from utils.tools.group import Group
 from utils.resources.sound import Sound as Snd
+from utils.tools.groups import Groups
 
 
 class Collider:
@@ -16,7 +16,7 @@ class Collider:
         Checks the collision of a meteor and a ship.
         Causes an explosion animation if a collision occurs
         """
-        touched = pg.sprite.spritecollide(ship, Group.METEORS, False)
+        touched = pg.sprite.spritecollide(ship, Groups.METEORS, False)
         result = 0
         for meteor in touched:
             if Collider.collide_by_mask(ship, meteor):
@@ -32,7 +32,7 @@ class Collider:
         Checks the collision of a meteor and a rocket.
         Causes an explosion animation if a collision occurs
         """
-        touched: dict[Meteor, list[Rocket]] = pg.sprite.groupcollide(Group.METEORS, Group.ROCKETS, False, False)
+        touched: dict[Meteor, list[Rocket]] = pg.sprite.groupcollide(Groups.METEORS, Groups.ROCKETS, False, False)
         result = 0
         for meteor, rockets in touched.items():
             for rocket in rockets:

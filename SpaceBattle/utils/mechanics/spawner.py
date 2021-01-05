@@ -1,14 +1,15 @@
+import random as rnd
+
 from config import Configuration as Conf
 from sprites.meteor import Meteor
 from sprites.piece import Piece
-from utils.tools.group import Group
-import random as rnd
+from utils.tools.groups import Groups
 
 
 class Spawner:
     @staticmethod
     def all_pieces(on_field: bool):
-        while len(Group.PIECES) < Conf.Piece.QUANTITY:
+        while len(Groups.PIECES) < Conf.Piece.QUANTITY:
             Spawner.piece(on_field)
 
     @staticmethod
@@ -16,7 +17,7 @@ class Spawner:
         """
         Spawn all meteors by time or quantity configurations
         """
-        while len(Group.METEORS) < Conf.Meteor.QUANTITY:
+        while len(Groups.METEORS) < Conf.Meteor.QUANTITY:
             Spawner.meteor()
 
     @staticmethod
@@ -26,7 +27,7 @@ class Spawner:
             piece.locate(*Spawner.GetCoord.get_on_field())
         else:
             piece.locate(*Spawner.GetCoord.get_out_field(*piece.image.get_size()))
-        piece.add(Group.PIECES, Group.ALL)
+        piece.add(Groups.PIECES, Groups.ALL)
 
     @staticmethod
     def meteor():
@@ -38,7 +39,7 @@ class Spawner:
             meteor.locate(*Spawner.GetCoord.get_on_field())
         else:
             meteor.locate(*Spawner.GetCoord.get_out_field(*meteor.image.get_size()))
-        meteor.add(Group.METEORS, Group.ALL)
+        meteor.add(Groups.METEORS, Groups.ALL)
 
     @staticmethod
     def change_difficulty(value):
@@ -51,7 +52,7 @@ class Spawner:
 
     class GetCoord:
         @staticmethod
-        def get_on_field():
+        def get_on_field() -> tuple[float, float]:
             """
             Get coordinates on field
             :return: horizontally and vertically position
@@ -61,7 +62,7 @@ class Spawner:
             return x, y
 
         @staticmethod
-        def get_out_field(x_size: int, y_size: int):
+        def get_out_field(x_size: float, y_size: float) -> tuple[float, float]:
             """
             Get coordinates out of field
             :param x_size: size of the object on x axis
