@@ -149,6 +149,7 @@ class Configuration:
 
     # Checking parameters
     assert Game.LOSE_DELAY > 0
+    assert 0 <= Overlay.OPACITY <= 100
     assert 0 <= Ship.RESIST
     assert 0 < Ship.DEAD_SPEED < 1
     assert Control.Mouse.SMOOTH >= 1

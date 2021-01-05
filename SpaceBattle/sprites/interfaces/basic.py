@@ -1,9 +1,6 @@
-from math import hypot, atan2, cos, sin
-
 import pygame as pg
 
 from config import Configuration as Conf
-from utils.resources.image import Image as Img
 
 
 class Sprite(pg.sprite.Sprite):
@@ -43,7 +40,7 @@ class TextureUpdatable(Sprite):
     ----------
      needs_update : bool
         flag contains if this type of sprite needs updating
-    texture_num : int
+     texture_num : int
         number of the texture from pack
     """
 
@@ -77,7 +74,7 @@ class Locatable(Sprite):
     ----------
      pos_x : float
         position of the left top angle of the sprite on x axis
-    pos_y : float
+     pos_y : float
         position of the left top angle of the sprite on y axis
     """
     def __init__(self, texture: pg.Surface):
@@ -109,10 +106,10 @@ class Transparent(Locatable):
     ----------
     opacity : int
         0 <= opacity <= 100
-        default: 100
+        default: 0
         percentage of the transparency
     """
-    def __init__(self, texture: pg.Surface, opacity: int = 100):
+    def __init__(self, texture: pg.Surface, opacity: int = 0):
         texture.set_alpha(opacity)
         super().__init__(texture)
         self.opacity = opacity
@@ -266,129 +263,6 @@ class Rotatable(Movable):
         self.rect = self.image.get_rect(center=self.rect.center)
         self.pos_x = self.rect.centerx + x_offset
         self.pos_y = self.rect.centery + y_offset
-
-
-class Acceleratable(Movable):
-    """ An interface Acceleratable
-
-    Allows moving sprite consider to Physics.
-    Use <Acceleratable.object>.accelerate(x, y, weight, power, resist) to
-    give axel to sprite and to change axes speed.
-
-    Attributes
-    ----------
-    weight : float
-        abstract of the sprite
-    power : float
-        power of the sprite
-    resist : float
-        abstract resisting multiplier of the environment
-    """
-
-    def __init__(self, texture: pg.Surface, weight: float, power: float, resist: float):
-        super().__init__(texture)
-        self.weight = weight
-        self.power = power
-        self.resist = resist
-
-    def accelerate(self, x: float, y: float):
-        """
-        Changes axis speed, from axel vector
-        :param x: coordinate of the axel vector -1 <= x <= 1
-        :param y: coordinate of the axel vector -1 <= y <= 1
-        """
-        assert -1 <= x <= 1 and -1 <= y <= 1
-        a = Acceleratable.PhysCalc.axel(x, y, self.power)
-        r = Acceleratable.PhysCalc.resist(self.speed_x, self.speed_y, self.resist)
-        self.speed_x += (a[0] - r[0]) / self.weight
-        self.speed_y += (a[1] - r[1]) / self.weight
-
-    class PhysCalc:
-        """ A static class for calculating physics metrics:
-        for axel: PhysCalc.axel(x, y, power),
-        for resist: PhysCalc.resist(speed_x, speed_y, resist)
-        """
-        @staticmethod
-        def axel(x: float, y: float, power: float) -> tuple[float, float]:
-            """
-            Calculates axel by the vector coordinates
-            :param x: vector coordinate
-            :param y: vector coordinate
-            :param power: strength
-            :return: axel vector
-            """
-            force = min(1.0, hypot(x, y))
-            rad = atan2(y, x)
-            a_x = power * cos(rad) * force
-            a_y = power * sin(rad) * force
-            return a_x, a_y
-
-        @staticmethod
-        def resist(speed_x: float, speed_y: float, resist: float) -> tuple[float, float]:
-            """
-            Calculates resisting by the vector coordinates
-            :param speed_x: sprite's speed on x axis
-            :param speed_y: sprite's speed on y axis
-            :param resist: resisting multiplier
-            :return: resisting vector
-            """
-            speed = hypot(speed_x, speed_y)
-            rad = atan2(speed_y, speed_x)
-            r = resist * pow(speed, 2)
-            r_x = r * cos(rad)
-            r_y = r * sin(rad)
-            return r_x, r_y
-
-
-class AcceleratableWithFire(Acceleratable):
-    """ An interface AcceleratableWithFire
-
-    Wrap for the Acceleratable with possibility of changing
-    textures when it has power and it doesn't.
-
-    Attributes
-    ----------
-    texture_pack : tuple[pg.Surface, pg.Surface]
-        tuple of textures: normal and with fire
-    with_fire : bool
-        flag, if fire texture is turned on
-    """
-    def __init__(self, texture_pack: tuple[pg.Surface, pg.Surface], weight: float, power: float, resist: float):
-        super().__init__(texture_pack[0], weight, power, resist)
-        self.texture_pack: tuple[pg.Surface, pg.Surface] = texture_pack
-        self.with_fire: bool = False
-
-    def accelerate(self, x: float, y: float) -> None:
-        """
-        Wrap for the <Acceleratable.object>.accelerate(x, y), changing textures
-
-        Changes axis speed, from axel vector
-        :param x: coordinate of the axel vector -1 <= x <= 1
-        :param y: coordinate of the axel vector -1 <= y <= 1
-        """
-        self.wear_fire((x, y) != (0, 0))
-        super().accelerate(x, y)
-
-    def wear_fire(self, with_fire: bool) -> None:
-        """
-        Changes textures consider to with_fire
-        :param with_fire: True if fire texture should be turned on
-        """
-        if with_fire != self.with_fire:
-            self.with_fire = with_fire
-            self.texture = self.texture_pack[1] if with_fire else self.texture_pack[0]
-            if isinstance(self, Rotatable):
-                self.rotate()
-            else:
-                self.image = self.texture
-            self.rect = self.image.get_rect(center=self.rect.center)
-
-    def set_texture(self, texture_pack: tuple[pg.Surface, pg.Surface]) -> None:
-        """
-        Overriding <Sprite.object>.set_texture(texture), receiving tuple of textures
-        :param texture_pack: new textures for 2 states
-        """
-        self.texture_pack = texture_pack
 
 
 class Group(pg.sprite.Group):

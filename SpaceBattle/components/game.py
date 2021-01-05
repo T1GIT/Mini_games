@@ -34,7 +34,6 @@ class Game(Resetable):
         self.ship: Ship = Ship()
         # Timers
         self.meteor_timer = Timer(Conf.Meteor.PERIOD)
-        self.rocket_timer = Timer(Conf.Rocket.PERIOD)
         self.losing_timer = Timer(Conf.Game.LOSE_DELAY)
         self.frames_timer = Timer(Conf.Overlay.Framerate.PERIOD)
         # Background
@@ -118,8 +117,7 @@ class Game(Resetable):
             if kb_self_distract == [True, True] or gp_self_distract == [True, True]:
                 self.lose()
             # Shooting
-            if self.rocket_timer.is_ready() and shoot:
-                self.rocket_timer.start()
+            if shoot and self.ship.can_shoot():
                 self.ship.shoot()
             # Moving
             self.ship.accelerate(x, -y)

@@ -3,9 +3,9 @@ from math import atan2, degrees, tan, hypot
 import pygame as pg
 
 from config import Configuration as Conf
-from sprites.interfaces.basic import TextureUpdatable, Acceleratable, AcceleratableWithFire, Rotatable
+from sprites.interfaces.basic import TextureUpdatable, Rotatable
 from sprites.interfaces.bound import Bound
-from sprites.interfaces.extended import Shootable
+from sprites.interfaces.extended import Shootable, AcceleratableWithFire
 from utils.resources.image import Image as Img
 from utils.resources.sound import Sound as Snd
 
@@ -32,7 +32,7 @@ class Ship(AcceleratableWithFire, TextureUpdatable, Shootable, Bound.Stopable, R
             resist=Conf.Ship.RESIST
         )
         Rotatable.__init__(self, texture_pack[0])
-        Shootable.__init__(self, texture_pack[0])
+        Shootable.__init__(self, texture_pack[0], period=Conf.Rocket.PERIOD)
         Bound.Stopable.__init__(self, texture_pack[0])
 
     def update(self):
