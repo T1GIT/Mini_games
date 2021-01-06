@@ -15,7 +15,7 @@ class Configuration:
         HEIGHT = 1000
 
     class Game:
-        LOSE_DELAY = 9 * 1000  # ms
+        LOSE_DELAY = 5 * 1000  # ms
         DIFFICULTY = [
                     ("novice", (1100, 10)),
                     ("easy", (900, 20)),
@@ -63,8 +63,8 @@ class Configuration:
 
     class Ship:
         SIZE = 150
-        WEIGHT = 5
-        POWER = 5
+        WEIGHT = 7
+        POWER = 7
         RESIST = 0.05  # >= 0
         DEAD_SPEED = 0.2  # [0, 1)
         ANIM_SCALE = 2
@@ -102,10 +102,11 @@ class Configuration:
 
     class Animation:
         DEFAULT_SIZE = 200
-        FPS = 40
+        FPS = 60
 
     class Heal:
         SIZE = 50
+        ANIM_SIZE = 100
         MAX_SPEED = 5
         PERIOD = 5000
 

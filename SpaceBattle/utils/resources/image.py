@@ -122,6 +122,7 @@ class Image:
             Image.get_meteors()
             Image.get_animation("ship")
             Image.get_animation("meteor")
+            Image.get_animation("heal")
             Image.get_pieces()
             print(f"Caching took {round((time_ns() - t) / 1e6, 2)} ms")
             callback()

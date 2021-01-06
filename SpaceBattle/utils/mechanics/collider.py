@@ -21,7 +21,7 @@ class Collider:
         for heal in touched:
             if Collider.collide_by_mask(ship, heal):
                 Snd.heal()
-                # Animation.on_sprite("heal", meteor, max(meteor.rect.size)) TODO: add animation
+                Animation.on_sprite("heal", heal, Conf.Heal.ANIM_SIZE)
                 heal.kill()
                 result += 1
         return result

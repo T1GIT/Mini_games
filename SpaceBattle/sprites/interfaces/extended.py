@@ -89,6 +89,13 @@ class Acceleratable(Movable):
         self.power = power
         self.resist = resist
 
+    def set_power(self, power: float):
+        """
+        Changes value of the power
+        :param power: new power value
+        """
+        self.power = power
+
     def accelerate(self, x: float, y: float):
         """
         Changes axis speed, from axel vector

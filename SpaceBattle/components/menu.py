@@ -198,7 +198,7 @@ class Menu(Resetable):
         menu.add_button('     Exit     ', self.window.exit)
         # Sound
         self.engine.set_sound(pygame_menu.sound.SOUND_TYPE_CLICK_MOUSE, Snd.click(),
-                              volume=Snd.get_volume(Conf.Sound.Volume.SFX))
+                              volume=Snd.Volume.get_volume(Conf.Sound.Volume.SFX))
         menu.set_sound(self.engine, recursive=True)
         return menu
 
