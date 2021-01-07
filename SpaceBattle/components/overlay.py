@@ -143,14 +143,6 @@ class Overlay(Resetable):
             super().locate(bottomright=(Conf.Window.WIDTH - Conf.Overlay.Framerate.X_OFFSET,
                                         Conf.Window.HEIGHT - Conf.Overlay.Framerate.Y_OFFSET))
 
-        def update(self) -> None:
-            if Conf.Overlay.Framerate.VISIBLE:
-                if super().get_opacity() != Conf.Overlay.OPACITY:
-                    super().set_opacity(Conf.Overlay.OPACITY)
-            else:
-                if super().get_opacity() != 0:
-                    super().set_opacity(0)
-
         def add_frame(self):
             self.amount_frames += 1
 
@@ -160,7 +152,3 @@ class Overlay(Resetable):
                 Conf.System.FPS))
             self.last_time = time_ns()
             self.amount_frames = 0
-
-        @staticmethod
-        def toggle(value):
-            Conf.Overlay.Framerate.VISIBLE = value

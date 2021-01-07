@@ -22,6 +22,13 @@ class Sprite(pg.sprite.Sprite):
         self.texture: pg.Surface = texture
         self.image: pg.Surface = texture
 
+    def get_size(self) -> tuple[int, int]:
+        """
+        Returns size of the sprite
+        :return: (x size, y size)
+        """
+        return self.image.get_size()
+
     def set_texture(self, texture: pg.Surface) -> None:
         """
         Changes sprite's image.
@@ -29,40 +36,6 @@ class Sprite(pg.sprite.Sprite):
         """
         self.texture = texture
         self.image = texture
-
-
-class TextureUpdatable(Sprite):
-    """ An interface TextureUpdatable.
-
-    Allows changing sprite's texture in the time of playing.
-
-    Attributes
-    ----------
-     needs_update : bool
-        flag contains if this type of sprite needs updating
-     texture_num : int
-        number of the texture from pack
-    """
-
-    needs_update: bool
-    texture_num: int
-
-    def update_texture(self, texture: pg.Surface) -> None:
-        """
-        Changes texture of the sprite if this type needs.
-        :param texture: new sprite's texture
-        """
-        super().set_texture(texture)
-        type(self).needs_update = False
-
-    @classmethod
-    def set_texture_num(cls, num: int) -> None:
-        """
-        Sets new number of the sprite type texture.
-        :param num: number of the new texture
-        """
-        cls.texture_num = num
-        cls.needs_update = True
 
 
 class Locatable(Sprite):
@@ -263,6 +236,15 @@ class Rotatable(Movable):
         self.rect = self.image.get_rect(center=self.rect.center)
         self.pos_x = self.rect.centerx + x_offset
         self.pos_y = self.rect.centery + y_offset
+
+    def set_texture(self, texture: pg.Surface) -> None:
+        """
+        Overriding <Sprite.object>.set_texture(texture).
+        Rotates the sprites after the changing texture
+        :param texture: new sprite image
+        """
+        super().set_texture(texture)
+        self.rotate()
 
 
 class Group(pg.sprite.Group):

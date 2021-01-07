@@ -181,7 +181,7 @@ class AcceleratableWithFire(Acceleratable):
         """
         if with_fire != self.with_fire:
             self.with_fire = with_fire
-            self.texture = self.texture_pack[1] if with_fire else self.texture_pack[0]
+            self.texture = self.texture_pack[1 if with_fire else 0]
             if isinstance(self, Rotatable):
                 self.rotate()
             else:
@@ -194,3 +194,4 @@ class AcceleratableWithFire(Acceleratable):
         :param texture_pack: new textures for 2 states
         """
         self.texture_pack = texture_pack
+        super().set_texture(texture_pack[1 if self.with_fire else 0])

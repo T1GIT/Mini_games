@@ -16,16 +16,9 @@ class Configuration:
 
     class Game:
         LOSE_DELAY = 5 * 1000  # ms
-        DIFFICULTY = [
-                    ("novice", (1100, 10)),
-                    ("easy", (900, 20)),
-                    ("normal", (700, 30)),
-                    ("hard", (650, 40)),
-                    ("DEATH", (500, 50)),
-                ]
 
     class Overlay:
-        OPACITY = 80
+        OPACITY = 100
 
         class Framerate:
             VISIBLE = True
@@ -104,11 +97,13 @@ class Configuration:
         DEFAULT_SIZE = 200
         FPS = 60
 
-    class Heal:
+    class Bonus:
         SIZE = 50
         ANIM_SIZE = 100
         MAX_SPEED = 5
-        PERIOD = 5000
+
+        class Period:
+            HEAL = 5000
 
     class Image:
         SHIP = 0
@@ -152,11 +147,6 @@ class Configuration:
 
     class Rules:
         LIFES = 3
-
-    @staticmethod
-    def change_fps(value: int):
-        Configuration.System.FPS = value
-        Configuration.System.SCALE = Configuration.System.GAME_SPEED / value
 
     # Checking parameters
     assert Game.LOSE_DELAY > 0

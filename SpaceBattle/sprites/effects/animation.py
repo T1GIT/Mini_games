@@ -13,7 +13,7 @@ class Animation(Locatable):
     """
     Class that shows an animation of exploding objects
     """
-    def __init__(self, name: str, size: int = Conf.Animation.DEFAULT_SIZE):
+    def __init__(self, name: str, size: float = Conf.Animation.DEFAULT_SIZE):
         self.frames = deque(map(lambda x: Img.scale(x, size), Img.get_animation(name)))
         super().__init__(texture=self.frames.popleft())
         self.frames_timer = Timer(1000 / Conf.Animation.FPS)
@@ -27,7 +27,7 @@ class Animation(Locatable):
                 super().kill()
 
     @staticmethod
-    def on_sprite(name: str, sprite: pg.sprite.Sprite, size: int):
+    def on_sprite(name: str, sprite: pg.sprite.Sprite, size: float):
         """
         Animation is invoked
         :param size: size of the animation

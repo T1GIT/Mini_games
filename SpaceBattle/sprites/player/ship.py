@@ -3,26 +3,24 @@ from math import atan2, degrees, tan, hypot
 import pygame as pg
 
 from config import Configuration as Conf
-from sprites.interfaces.basic import TextureUpdatable, Rotatable
+from sprites.interfaces.basic import Rotatable
 from sprites.interfaces.bound import Bound
 from sprites.interfaces.extended import Shootable, AcceleratableWithFire
 from utils.resources.image import Image as Img
 from utils.resources.sound import Sound as Snd
 
 
-class Ship(AcceleratableWithFire, TextureUpdatable, Shootable, Bound.Stopable, Rotatable):
+class Ship(AcceleratableWithFire, Shootable, Bound.Stopable, Rotatable):
     """
     Class of the player's mob
     Can shooting rockets
     Can by destroyed by meteors
     """
-    texture_num = Conf.Image.SHIP
-    needs_update = False
 
     def __init__(self):
         texture_pack = (
-           Img.scale(Img.get_ship(Ship.texture_num, False), Conf.Ship.SIZE),
-           Img.scale(Img.get_ship(Ship.texture_num, True), Conf.Ship.SIZE)
+           Img.scale(Img.get_ship(Conf.Image.SHIP, False), Conf.Ship.SIZE),
+           Img.scale(Img.get_ship(Conf.Image.SHIP, True), Conf.Ship.SIZE)
         )
         AcceleratableWithFire.__init__(
             self,
@@ -41,9 +39,6 @@ class Ship(AcceleratableWithFire, TextureUpdatable, Shootable, Bound.Stopable, R
         Adds the axis speed in the current time
         period to it's coordinates
         """
-        if Ship.needs_update:
-            self.update_texture(Img.scale(Img.get_ship(Ship.texture_num, self.with_fire), Conf.Ship.SIZE))
-            self.vector_rotate(1, tan(self.angle), False)
         if hypot(self.speed_x, self.speed_y) < Conf.Ship.DEAD_SPEED:
             self.speed_x, self.speed_y = 0, 0
         else:
@@ -51,7 +46,7 @@ class Ship(AcceleratableWithFire, TextureUpdatable, Shootable, Bound.Stopable, R
             super().move()
 
     def accelerate(self, x, y):
-        if (x, y) != (0, 0) and not self.with_fire:
+        if not self.with_fire and (x, y) != (0, 0):
             Snd.engine()
         super().accelerate(x, y)
 
@@ -77,10 +72,3 @@ class Ship(AcceleratableWithFire, TextureUpdatable, Shootable, Bound.Stopable, R
     def shoot(self):
         super().shoot()
         Snd.shoot()
-
-    def update_texture(self, texture: pg.Surface) -> None:
-        super().set_texture((
-            Img.scale(Img.get_ship(Ship.texture_num, False), Conf.Ship.SIZE),
-            Img.scale(Img.get_ship(Ship.texture_num, True), Conf.Ship.SIZE)
-        ))
-        super().update_texture(texture)

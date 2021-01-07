@@ -1,7 +1,8 @@
 import random as rnd
 
 from config import Configuration as Conf
-from sprites.loot.heal import Heal
+from sprites.interfaces.basic import Sprite, Movable
+from sprites.loot.bonuses import Heal
 from sprites.mobs.meteor import Meteor
 from sprites.effects.piece import Piece
 from utils.tools.groups import Groups
@@ -9,53 +10,17 @@ from utils.tools.groups import Groups
 
 class Spawner:
     @staticmethod
-    def heal():
-        heal = Heal()
-        heal.locate(*Spawner.GetCoord.get_out_field(heal.image.get_size(), heal.get_speed()))
-        heal.add(Groups.HEALS, Groups.ALL)
-
-    @staticmethod
-    def all_pieces(on_field: bool):
-        while len(Groups.PIECES) < Conf.Piece.QUANTITY:
-            Spawner.piece(on_field)
-
-    @staticmethod
-    def all_meteors():
-        """
-        Spawn all meteors by time or quantity configurations
-        """
-        while len(Groups.METEORS) < Conf.Meteor.QUANTITY:
-            Spawner.meteor()
-
-    @staticmethod
-    def piece(on_field: bool):
-        piece = Piece()
+    def one(cls: type, on_field: bool = False) -> Sprite:
+        sprite = cls()
         if on_field:
-            piece.locate(*Spawner.GetCoord.get_on_field())
+            sprite.locate(*Spawner.GetCoord.get_on_field())
         else:
-            piece.locate(*Spawner.GetCoord.get_out_field(piece.image.get_size(), piece.get_speed()))
-        piece.add(Groups.PIECES, Groups.ALL)
+            sprite.locate(*Spawner.GetCoord.get_out_field(sprite.get_size(), sprite.get_speed()))
+        return sprite
 
     @staticmethod
-    def meteor():
-        """
-        Spawn simple meteor on the field
-        """
-        meteor = Meteor()
-        if Conf.Meteor.ON_FIELD:
-            meteor.locate(*Spawner.GetCoord.get_on_field())
-        else:
-            meteor.locate(*Spawner.GetCoord.get_out_field(meteor.image.get_size(), meteor.get_speed()))
-        meteor.add(Groups.METEORS, Groups.ALL)
-
-    @staticmethod
-    def change_difficulty(value):
-        Conf.Meteor.PERIOD = value[0]
-        Conf.Meteor.QUANTITY = value[1]
-
-    @staticmethod
-    def change_meteor_spawn_mode(value: bool):
-        Conf.Meteor.BY_TIME = bool(value)
+    def many(cls: type, amount: int, on_field: bool = False) -> list[Sprite]:
+        return list(map(lambda _: Spawner.one(cls, on_field), range(amount)))
 
     class GetCoord:
         @staticmethod

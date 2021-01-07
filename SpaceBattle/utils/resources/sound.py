@@ -19,7 +19,7 @@ class Sound:
         pg.mixer.stop()
         pg.mixer.music.load(
             f'{Sound._ROOT}/background/{path}.{Conf.Sound.FORMAT}')
-        pg.mixer.music.set_volume(Sound.Volume.get_volume(Sound._VOLUME.BG))
+        pg.mixer.music.set_volume(Sound.get_volume(Sound._VOLUME.BG))
         pg.mixer.music.play(-1)
         pg.mixer.music.set_pos(pos)
 
@@ -36,17 +36,16 @@ class Sound:
     SFX
     """
     @staticmethod
-    def click() -> str:
-        return f"{Sound._ROOT}/sfx/click/{Conf.Sound.CLICK}.{Conf.Sound.FORMAT}"
-
-    @staticmethod
     def _play_sfx(path: str, volume: float = 1):
         if path not in Sound.SFX_DICT:
             Sound.SFX_DICT[path] = pg.mixer.Sound(
                 f'{Sound._ROOT}/sfx/{path}.{Conf.Sound.FORMAT}')
-            Sound.SFX_DICT[path].set_volume(Sound.Volume.get_volume(Sound._VOLUME.SFX) * volume)
+            Sound.SFX_DICT[path].set_volume(Sound.get_volume(Sound._VOLUME.SFX) * volume)
         Sound.SFX_DICT[path].stop()
         Sound.SFX_DICT[path].play()
+
+    @staticmethod
+    def click(): Sound._play_sfx(f"click/{Conf.Sound.CLICK}")  # TODO: add sound to the menu
 
     @staticmethod
     def shoot(): Sound._play_sfx(f"shoot/{Conf.Sound.SHOOT}", 0.7)
@@ -66,24 +65,6 @@ class Sound:
     @staticmethod
     def ex_meteor(): Sound._play_sfx("explode/meteor", 2)
 
-    class Volume:
-        @staticmethod
-        def set_sfx(level: int):
-            Conf.Sound.Volume.SFX = level
-            for sound in Sound.SFX_DICT.values():
-                sound.set_volume(Sound.Volume.get_volume(level))
-
-        @staticmethod
-        def set_bg(level: int):
-            Conf.Sound.Volume.BG = level
-            pg.mixer.music.set_volume(Sound.Volume.get_volume(level))
-
-        @staticmethod
-        def set_general(level: int):
-            Conf.Sound.Volume.GENERAL = level
-            Sound.Volume.set_sfx(Conf.Sound.Volume.SFX)
-            Sound.Volume.set_bg(Conf.Sound.Volume.BG)
-
-        @staticmethod
-        def get_volume(volume: float) -> float:
-            return volume * Conf.Sound.Volume.GENERAL / 100
+    @staticmethod
+    def get_volume(volume: float) -> float:
+        return volume * Conf.Sound.Volume.GENERAL / 100

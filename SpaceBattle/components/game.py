@@ -4,6 +4,9 @@ from components.interfaces.resetable import Resetable
 from components.overlay import Overlay
 from config import Configuration as Conf
 from sprites.effects.animation import Animation
+from sprites.effects.piece import Piece
+from sprites.loot.bonuses import Heal
+from sprites.mobs.meteor import Meteor
 from sprites.player.ship import Ship
 from utils.listener.events import Keyboard as Kb, Gamepad as Gp, Mouse as Ms, Device as Dvc, System as Sys, Event
 from utils.listener.listener import EventListener
@@ -34,7 +37,7 @@ class Game(Resetable):
         self.ship: Ship = Ship()
         # Timers
         self.meteor_timer = Timer(Conf.Meteor.PERIOD)
-        self.heal_timer = Timer(Conf.Heal.PERIOD)
+        self.heal_timer = Timer(Conf.Bonus.Period.HEAL)
         self.losing_timer = Timer(Conf.Game.LOSE_DELAY)
         self.frames_timer = Timer(Conf.Overlay.Framerate.PERIOD)
         # Background
@@ -66,8 +69,12 @@ class Game(Resetable):
         self.ship.locate(Conf.Window.WIDTH // 2, Conf.Window.HEIGHT // 2)
         Groups.ALL.add(self.ship)
         if not Conf.Meteor.BY_TIME:
-            Spawner.all_meteors()
-        Spawner.all_pieces(True)
+            meteors = Spawner.many(Meteor, Conf.Meteor.QUANTITY)
+            Groups.ALL.add(meteors)
+            Groups.METEORS.add(meteors)
+        pieces = Spawner.many(Piece, Conf.Piece.QUANTITY, True)
+        Groups.ALL.add(pieces)
+        Groups.PIECES.add(pieces)
         self.running = True
         self.mainloop()
 
@@ -155,21 +162,25 @@ class Game(Resetable):
         hits = Collider.rockets_meteors()
         self.comp_overlay.score.up(hits)
         if not self.game_over:
-            wounds = Collider.ship_meteors(self.ship)
+            wounds = Collider.ship_to_group(self.ship, Groups.METEORS, Snd.ex_meteor, "meteor")
             self.comp_overlay.health.down(wounds)
-            heals = Collider.ship_heals(self.ship)
+            heals = Collider.ship_to_group(self.ship, Groups.HEALS, Snd.heal, "heal", Conf.Bonus.ANIM_SIZE)
             self.comp_overlay.health.up(heals)
-
 
     def spawning(self):
         if Conf.Meteor.BY_TIME:
             if self.meteor_timer.is_ready():
-                Spawner.meteor()
+                Spawner.one(Meteor).add(Groups.ALL, Groups.METEORS)
                 self.meteor_timer.start()
-        else: Spawner.all_meteors()
-        Spawner.all_pieces(False)
+        else:
+            meteors = Spawner.many(Meteor, Conf.Meteor.QUANTITY - len(Groups.METEORS))
+            Groups.ALL.add(meteors)
+            Groups.METEORS.add(meteors)
+        pieces = Spawner.many(Piece, Conf.Piece.QUANTITY - len(Groups.PIECES))
+        Groups.ALL.add(pieces)
+        Groups.PIECES.add(pieces)
         if self.heal_timer.is_ready():
-            Spawner.heal()
+            Spawner.one(Heal).add(Groups.ALL, Groups.HEALS)
             self.heal_timer.start()
 
     def refreshing_framerate(self):

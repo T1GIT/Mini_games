@@ -5,6 +5,7 @@ import pygame as pg
 from components.game import Game
 from components.interfaces.resetable import Resetable
 from components.menu import Menu
+from components.settings import Settings
 from config import Configuration as Conf
 from utils.resources.image import Image as Img
 from utils.resources.sound import Sound as Snd
@@ -30,8 +31,9 @@ class Window(Resetable):
             Conf.Window.HEIGHT = user32.GetSystemMetrics(1)
         self.screen = pg.display.set_mode((Conf.Window.WIDTH, Conf.Window.HEIGHT))
         # Components
+        self.comp_settings = Settings(self)
         self.comp_game = Game(self)
-        self.comp_menu = Menu(self)
+        self.comp_menu = Menu(self, self.comp_settings)
         # Variables
         self.escape_timer: Timer = Timer(Conf.Control.ESC_PERIOD)
         # Flags

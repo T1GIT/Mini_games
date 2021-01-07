@@ -1,6 +1,6 @@
 import pygame_menu
 
-from components.game import Game
+from components.settings import Settings
 from components.interfaces.resetable import Resetable
 from components.overlay import Overlay
 from config import Configuration as Conf
@@ -14,9 +14,10 @@ from utils.resources.sound import Sound as Snd
 
 
 class Menu(Resetable):
-    def __init__(self, window):
+    def __init__(self, window, settings):
         # Environment
         self.window = window
+        self.settings = settings
         self.engine = pygame_menu.sound.Sound()
         self.title_font = "./resources/fonts/opensans.ttf"
         self.widget_font = "./resources/fonts/opensans-light.ttf"
@@ -92,71 +93,47 @@ class Menu(Resetable):
         )
 
         # Layout
+        s_items = Settings.Items
+        s_def = Settings.Default
         menu.add_label("FPS")
         menu.add_selector(
-            f'Limit:  ', items=[
-                ("30", 30),
-                ("60", 60),
-                ("90", 90),
-                ("120", 120)
-            ], font_color=Conf.Menu.FONT_COLOR,
-            default=Conf.System.FPS // 30 - 1,
-            onchange=lambda _, value: Conf.change_fps(value)
+            f'Limit:  ', items=s_items.Fps.limit, font_color=Conf.Menu.FONT_COLOR,
+            default=s_def.Fps.limit, onchange=lambda _, value: self.settings.fps_limit(value)
         )
         menu.add_selector(
-            f'Show:  ', items=[
-                ("No", False),
-                ("Yes", True)
-            ], font_color=Conf.Menu.FONT_COLOR,
-            default=1 if Conf.Overlay.Framerate.VISIBLE else 0,
-            onchange=lambda _, value: Overlay.Framerate.toggle(value)
+            f'Show:  ', items=s_items.Fps.show, font_color=Conf.Menu.FONT_COLOR,
+            default=s_def.Fps.show, onchange=lambda _, value: self.settings.fps_show(value)
         )
-        menu.add_label("Game settings")
+        menu.add_label("GAME")
         menu.add_selector(
-            f'Meteor spawn:  ', items=[
-                ("static", False),
-                ("dynamic", True)
-            ], font_color=Conf.Menu.FONT_COLOR,
-            default=1 if Conf.Meteor.BY_TIME else 0,
-            onchange=lambda _, value: Spawner.change_meteor_spawn_mode(value)
+            f'Spawn:  ', items=s_items.Game.spawn, font_color=Conf.Menu.FONT_COLOR,
+            default=s_def.Game.spawn, onchange=lambda _, value: self.settings.game_spawn(value)
         )
         menu.add_selector(
-            f'Difficulty:  ',
-            items=Conf.Game.DIFFICULTY,
-            default=2, font_color=Conf.Menu.FONT_COLOR,
-            onchange=lambda _, value: Spawner.change_difficulty(value)
+            f'Difficulty:  ', items=s_items.Game.difficulty, font_color=Conf.Menu.FONT_COLOR,
+            default=s_def.Game.difficulty, onchange=lambda _, value: self.settings.game_difficulty(value)
         )
-        menu.add_label("Textures")
+        menu.add_label("SKIN")
         menu.add_selector(
-            f'Ship:  ',
-            items=[(str(i), i) for i in range(Img.SHIPS_AMOUNT)],
-            default=Ship.texture_num, font_color=Conf.Menu.FONT_COLOR,
-            onchange=lambda _, value: Ship.set_texture_num(value)
+            f'Ship:  ', items=s_items.Skin.ship, font_color=Conf.Menu.FONT_COLOR,
+            default=s_def.Skin.ship, onchange=lambda _, value: self.settings.skin_ship(value)
         )
         menu.add_selector(
-            f'Rocket:  ',
-            items=[(str(i), i) for i in range(Img.ROCKETS_AMOUNT)],
-            default=Rocket.texture_num, font_color=Conf.Menu.FONT_COLOR,
-            onchange=lambda _, value: Rocket.set_texture_num(value)
+            f'Rocket:  ', items=s_items.Skin.rocket, font_color=Conf.Menu.FONT_COLOR,
+            default=s_def.Skin.rocket,  onchange=lambda _, value: self.settings.skin_rocket(value)
         )
-        menu.add_label("Volume")
+        menu.add_label("VOLUME")
         menu.add_selector(
-            f'General:  ',
-            items=[(str(i), i) for i in range(0, 11)],
-            default=Conf.Sound.Volume.GENERAL, font_color=Conf.Menu.FONT_COLOR,
-            onchange=lambda _, value: Snd.Volume.set_general(value)
+            f'General:  ', items=s_items.Volume.general, font_color=Conf.Menu.FONT_COLOR,
+            default=s_def.Volume.general, onchange=lambda _, value: self.settings.volume_general(value)
         )
         menu.add_selector(
-            f'Background:  ',
-            items=[(str(i), i) for i in range(0, 11)],
-            default=Conf.Sound.Volume.BG, font_color=Conf.Menu.FONT_COLOR,
-            onchange=lambda _, value: Snd.Volume.set_bg(value)
+            f'Background:  ', items=s_items.Volume.background, font_color=Conf.Menu.FONT_COLOR,
+            default=s_def.Volume.background, onchange=lambda _, value: self.settings.volume_background(value)
         )
         menu.add_selector(
-            f'SFX:  ',
-            items=[(str(i), i) for i in range(0, 11)],
-            default=Conf.Sound.Volume.SFX, font_color=Conf.Menu.FONT_COLOR,
-            onchange=lambda _, value: Snd.Volume.set_sfx(value)
+            f'Effects:  ', items=s_items.Volume.effects, font_color=Conf.Menu.FONT_COLOR,
+            default=s_def.Volume.effects, onchange=lambda _, value: self.settings.volume_effects(value)
         )
         return menu
 
@@ -191,15 +168,12 @@ class Menu(Resetable):
             onclose=lambda: pygame_menu.events.DISABLE_CLOSE,
             mouse_motion_selection=True
         )
+
         # Layout
         menu.add_button('     Play     ', self.window.start, font_size=60, margin=(0, 50))
         menu.add_button('   Settings   ', settings)
         menu.add_button('     Info     ', about)
         menu.add_button('     Exit     ', self.window.exit)
-        # Sound
-        self.engine.set_sound(pygame_menu.sound.SOUND_TYPE_CLICK_MOUSE, Snd.click(),
-                              volume=Snd.Volume.get_volume(Conf.Sound.Volume.SFX))
-        menu.set_sound(self.engine, recursive=True)
         return menu
 
     def event_handler(self, events: dict[str, set[Event]]):
