@@ -1,14 +1,11 @@
 from components.window import Window
-
-
-class SpaceBattle:
-    def __init__(self):
-        self.window = Window()
-
-    def start(self):
-        self.window.show()
-
+from utils.tools.debugger import format_exception
+import datetime
 
 if __name__ == "__main__":
-    game = SpaceBattle()
-    game.start()
+    try:
+        window = Window()
+        window.show()
+    except Exception as e:
+        with open("log.txt", "a") as file:
+            file.write(str(datetime.datetime.now()) + " | ERROR | " + format_exception(e) + "\n")

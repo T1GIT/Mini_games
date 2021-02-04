@@ -1,3 +1,5 @@
+import sys
+
 import pygame as pg
 
 from components.interfaces.resetable import Resetable
@@ -87,7 +89,7 @@ class Game(Resetable):
         gp_self_distract = [False, False]
         for event in events.get(Dvc.SYSTEM, ()):
             if event.get_type() == Sys.Events.QUIT:
-                self.window.exit()
+                sys.exit()
         for event in events.get(Dvc.MOUSE, ()):
             if event.get_type() == Ms.Events.MOVE:
                 self.ship.vector_rotate(*event.get_data(), True)

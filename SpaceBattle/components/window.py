@@ -89,10 +89,6 @@ class Window(Resetable):
                 self.comp_menu.open()
             self.reset()
 
-    def exit(self):
-        if self.ready:
-            exit()
-
     @staticmethod
     def toggle_mouse(value: bool):
         pg.mouse.set_visible(value)

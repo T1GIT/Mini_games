@@ -1,3 +1,5 @@
+import sys
+
 import pygame_menu
 
 from components.settings import Settings
@@ -168,7 +170,7 @@ class Menu(Resetable):
         menu.add_button('     Play     ', self.window.start, font_size=60, margin=(0, 50))
         menu.add_button('   Settings   ', settings)
         menu.add_button('     Info     ', about)
-        menu.add_button('     Exit     ', self.window.exit)
+        menu.add_button('     Exit     ', sys.exit)
         return menu
 
     def event_handler(self, events: dict[str, set[Event]]):
