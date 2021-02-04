@@ -38,6 +38,20 @@ class Sprite(pg.sprite.Sprite):
         self.image = texture
 
 
+class Group(pg.sprite.Group):
+    """ A class Group
+
+    Wrapper for pg.sprite.Group with possibility of killing all sprites
+    in the group using <Group.object>.kill()
+    """
+
+    def kill_all(self) -> None:
+        """ Kills anyone sprite in the group """
+        for sprite in self:
+            sprite.kill()
+        super().empty()
+
+
 class Locatable(Sprite):
     """ An interface Locatable
 
@@ -196,7 +210,7 @@ class Movable(Locatable):
         return self.speed_x, self.speed_y
 
     def move(self) -> None:
-        """ Moves the sprite consider FPS. """
+        """ Moves the sprite consider FPS """
         self.pos_x += self.speed_x * Conf.System.SCALE
         self.pos_y += self.speed_y * Conf.System.SCALE
         self.rect.centerx = round(self.pos_x)
@@ -245,16 +259,3 @@ class Rotatable(Movable):
         """
         super().set_texture(texture)
         self.rotate()
-
-
-class Group(pg.sprite.Group):
-    """ A class Group
-
-    Wrapper for pg.sprite.Group with possibility of killing all sprites
-    in the group using <Group.object>.kill()
-    """
-    def kill(self) -> None:
-        """ Kills anyone sprite in the group """
-        for sprite in self:
-            sprite.kill()
-        super().empty()

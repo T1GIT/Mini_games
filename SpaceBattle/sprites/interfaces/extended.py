@@ -1,69 +1,35 @@
-from math import radians, cos, sin, hypot, atan2
+from math import cos, sin, hypot, atan2
+import random as rnd
 
 import pygame as pg
 
-from sprites.interfaces.basic import Rotatable, Movable
-from sprites.player.rocket import Rocket
-from utils.tools.groups import Groups
-from utils.tools.timer import Timer
+from config import Configuration as Conf
+from sprites.interfaces.basic import Rotatable, Movable, Group
+from sprites.interfaces.bound import Killable
 
 
-class Shootable(Rotatable):
-    """ An interface Shootable
+class Groupable:
+    def __init__(self):
+        self.group: Group = Group()
 
-    Allows sprite to shoot.
+    def get_group(self) -> Group:
+        return self.group
 
-    Attributes
-    ----------
-    shoot_radius : int
-        distance from the center of the sprite to first bound of the rocket
-    """
-    def __init__(self, texture: pg.Surface, speed_x: float = 0, speed_y: float = 0, period: float = 0):
-        super().__init__(texture, speed_x, speed_y)
-        self.shoot_timer: Timer = Timer(period)
-        self.shoot_radius: int = self.get_shoot_radius(texture)
 
-    def can_shoot(self) -> bool:
-        """
-        Checks if the shooting timer is over.
-        :return: True if the timer is over
-        """
-        return self.shoot_timer.is_ready()
+class Spawnable(Killable):
+    def spawn(self) -> None:
+        super().locate(*self.get_coord())
 
-    def shoot(self) -> None:
-        """ Creates and shoot the new rocket """
-        angle = -self.angle - 90
-        rad = radians(angle)
-        x = self.rect.centerx + self.shoot_radius * cos(rad)
-        y = self.rect.centery + self.shoot_radius * sin(rad)
-        rocket = Rocket()
-        rocket.shoot(x, y, angle)
-        rocket.add(Groups.ROCKETS, Groups.ALL)
-        self.shoot_timer.start()
-
-    def set_texture(self, texture: pg.Surface) -> None:
-        """
-        Overriding <Sprite.object>.set_texture with updating
-        shoot_radius
-        """
-        super().set_texture(texture)
-        self.shoot_radius = self.get_shoot_radius(texture)
-
-    @staticmethod
-    def get_shoot_radius(texture: pg.Surface) -> int:
-        """
-        Gets shoot_radius from the image by the closest to center
-        untransparent pixel.
-        :param texture: image to scan
-        :return: length of the radius
-        """
-        mask = pg.mask.from_surface(texture)
-        c_x, c_y = map(lambda x: x // 2, mask.get_size())
-        alpha = 0
-        for i in range(mask.get_size()[1]):
-            if not mask.get_at((c_x, i)): alpha += 1
-            else: break
-        return c_y - alpha
+    def get_coord(self) -> tuple[float, float]:
+        size = super().get_size()
+        speed = super().get_speed()
+        if rnd.random() > 0.5:
+            x = (-size[0] / 2) if speed[0] > 0 else (Conf.Window.WIDTH + size[0] / 2)
+            y = rnd.uniform(-size[1] / 2, Conf.Window.HEIGHT + size[1] / 2)
+        else:
+            x = rnd.uniform(-size[0] / 2, Conf.Window.WIDTH + size[0] / 2)
+            y = (-size[1] / 2) if speed[1] > 0 else (Conf.Window.HEIGHT + size[1] / 2)
+        return x, y
 
 
 class Acceleratable(Movable):

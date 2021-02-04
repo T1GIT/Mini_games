@@ -2,15 +2,10 @@ import pygame_menu
 
 from components.settings import Settings
 from components.interfaces.resetable import Resetable
-from components.overlay import Overlay
 from config import Configuration as Conf
-from sprites.player.rocket import Rocket
-from sprites.player.ship import Ship
 from utils.listener.events import Event, Device as Dvc, Keyboard as Kb, Gamepad as Gp
 from utils.listener.listener import EventListener
-from utils.mechanics.spawner import Spawner
 from utils.resources.image import Image as Img
-from utils.resources.sound import Sound as Snd
 
 
 class Menu(Resetable):

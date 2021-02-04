@@ -1,16 +1,15 @@
-from math import atan2, degrees, tan, hypot
-
-import pygame as pg
+from math import atan2, degrees, hypot
 
 from config import Configuration as Conf
-from sprites.interfaces.basic import Rotatable
-from sprites.interfaces.bound import Bound
-from sprites.interfaces.extended import Shootable, AcceleratableWithFire
+from sprites.interfaces.basic import Rotatable, Sprite
+from sprites.interfaces.bound import Stopable
+from sprites.interfaces.extended import AcceleratableWithFire
+from sprites.interfaces.shooting import RocketShootable, ThreeRocketShootable
 from utils.resources.image import Image as Img
 from utils.resources.sound import Sound as Snd
 
 
-class Ship(AcceleratableWithFire, Shootable, Bound.Stopable, Rotatable):
+class Ship(AcceleratableWithFire, RocketShootable, Stopable, Rotatable):
     """
     Class of the player's mob
     Can shooting rockets
@@ -30,8 +29,8 @@ class Ship(AcceleratableWithFire, Shootable, Bound.Stopable, Rotatable):
             resist=Conf.Ship.RESIST
         )
         Rotatable.__init__(self, texture_pack[0])
-        Shootable.__init__(self, texture_pack[0], period=Conf.Rocket.PERIOD)
-        Bound.Stopable.__init__(self, texture_pack[0])
+        RocketShootable.__init__(self, texture_pack[0], period=Conf.Rocket.PERIOD)
+        Stopable.__init__(self, texture_pack[0])
 
     def update(self):
         """
@@ -39,11 +38,9 @@ class Ship(AcceleratableWithFire, Shootable, Bound.Stopable, Rotatable):
         Adds the axis speed in the current time
         period to it's coordinates
         """
+        super().move()
         if hypot(self.speed_x, self.speed_y) < Conf.Ship.DEAD_SPEED:
             self.speed_x, self.speed_y = 0, 0
-        else:
-            super().bound_stop()
-            super().move()
 
     def accelerate(self, x, y):
         if not self.with_fire and (x, y) != (0, 0):
@@ -69,6 +66,6 @@ class Ship(AcceleratableWithFire, Shootable, Bound.Stopable, Rotatable):
         else:
             super().rotate(delta)
 
-    def shoot(self):
-        super().shoot()
+    def shoot(self) -> tuple[Sprite, ...]:
         Snd.shoot()
+        return super().shoot()

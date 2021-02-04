@@ -56,7 +56,7 @@ class Configuration:
 
     class Ship:
         SIZE = 150
-        WEIGHT = 7
+        WEIGHT = 3
         POWER = 7
         RESIST = 0.05  # >= 0
         DEAD_SPEED = 0.2  # [0, 1)

@@ -1,20 +1,23 @@
-
 import pygame as pg
 
 from config import Configuration as Conf
 from sprites.effects.animation import Animation
-from sprites.interfaces.basic import Group
+from sprites.interfaces.basic import Group, Sprite
 from sprites.mobs.meteor import Meteor
-from sprites.player.rocket import Rocket
+from sprites.rockets.rocket import Rocket
 from sprites.player.ship import Ship
 from utils.resources.sound import Sound as Snd
 from utils.tools.groups import Groups
 
 
 class Collider:
+
+    def __init__(self, sound: callable):
+        self.sound: callable = sound
+
     @staticmethod
     def ship_to_group(ship: Ship, group: Group, sound, anim_name: str, anim_size: float = None) -> int:
-        touched = pg.sprite.spritecollide(ship, group, False)
+        touched: list[Sprite] = pg.sprite.spritecollide(ship, group, False)
         result = 0
         for sprite in touched:
             if Collider.collide_by_mask(ship, sprite):
@@ -28,12 +31,12 @@ class Collider:
         return result
 
     @staticmethod
-    def rockets_meteors() -> int:
+    def rockets_meteors(rocket_group, meteor_group) -> int:
         """
         Checks the collision of a meteor and a rocket.
         Causes an explosion animation if a collision occurs
         """
-        touched: dict[Meteor, list[Rocket]] = pg.sprite.groupcollide(Groups.METEORS, Groups.ROCKETS, False, False)
+        touched: dict[Meteor, list[Rocket]] = pg.sprite.groupcollide(meteor_group, rocket_group, False, False)
         result = 0
         for meteor, rockets in touched.items():
             for rocket in rockets:
@@ -56,3 +59,8 @@ class Collider:
         mask2 = pg.mask.from_surface(sprite2.image)
         offset = (sprite2.rect.x - sprite1.rect.x, sprite2.rect.y - sprite1.rect.y)
         return mask1.overlap_area(mask2, offset) > 0
+
+
+class ShipCollider(Collider):
+    def __init__(self, ship: Ship, group: Group, sound, anim_name: str, anim_size: float = None):
+        self

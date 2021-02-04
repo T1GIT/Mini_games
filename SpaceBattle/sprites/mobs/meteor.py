@@ -4,11 +4,12 @@ import pygame as pg
 
 from config import Configuration as Conf
 from sprites.interfaces.basic import Rotatable
-from sprites.interfaces.bound import Bound
+from sprites.interfaces.bound import Teleportable, Killable
+from sprites.interfaces.extended import Spawnable
 from utils.resources.image import Image as Img
 
 
-class Meteor(Rotatable, Bound.Teleportable, Bound.Killable):
+class Meteor(Rotatable, Teleportable, Spawnable):
     """
     Class of the meteor's mobs
     Can destroy ship
@@ -30,13 +31,12 @@ class Meteor(Rotatable, Bound.Teleportable, Bound.Killable):
         self.angle_speed = rnd.uniform(-cnf.MAX_ROTATE_SPEED, cnf.MAX_ROTATE_SPEED)
 
     def update(self):
-        super().move()
         if Conf.Meteor.ROTATING:
             self.rotate(self.angle_speed)
         if Conf.Meteor.TELEPORT:
-            super().bound_teleport()
+            Teleportable.move(self)
         else:
-            super().bound_kill()
+            Killable.move(self)
 
     def wound(self):
         self.lifes -= 1
