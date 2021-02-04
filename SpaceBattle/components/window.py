@@ -69,7 +69,7 @@ class Window(Resetable):
                 Snd.bg_game()
                 self.started = True
                 try:
-                    self.comp_game.start()
+                    self.comp_game.mainloop()
                 except GameOverException:
                     pass
                 except NewGameException:

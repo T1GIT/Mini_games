@@ -74,7 +74,7 @@ class Overlay(Resetable):
                 point.add(Groups.LIFES, Groups.ALL)
 
         def reset(self):
-            self.points_group.kill()
+            self.points_group.kill_all()
             for i in range(Conf.Rules.LIFES):
                 point = Overlay.Health.Life(self.texture)
                 self.points_group.add(point)

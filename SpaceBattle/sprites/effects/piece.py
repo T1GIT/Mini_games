@@ -3,11 +3,11 @@ import random as rnd
 import pygame as pg
 
 from config import Configuration as Conf
-from sprites.interfaces.bound import Bound
+from sprites.interfaces.extended import Spawnable
 from utils.resources.image import Image as Img
 
 
-class Piece(Bound.Killable):
+class Piece(Spawnable):
     """
     Class of the moving Pieces background
     Moves all the time
@@ -25,4 +25,3 @@ class Piece(Bound.Killable):
 
     def update(self):
         super().move()
-        super().bound_kill()

@@ -4,11 +4,11 @@ import pygame as pg
 
 from config import Configuration as Conf
 from sprites.interfaces.basic import Movable
-from sprites.interfaces.bound import Bound
+from sprites.interfaces.bound import Killable
 from utils.resources.image import Image as Img
 
 
-class Rocket(Bound.Killable, Movable):
+class Rocket(Killable, Movable):
     """
     Class of the rocket's mobs.
     Flies out from the rocket's nose.
@@ -20,7 +20,7 @@ class Rocket(Bound.Killable, Movable):
         # Settings
         self.start_pos: tuple[int, int] = (0, 0)
 
-    def shoot(self, x: float, y: float, deg: float):
+    def run(self, x: float, y: float, deg: float):
         rad = radians(deg)
         super().set_speed(
             speed_x=Conf.Rocket.SPEED * cos(rad),
@@ -32,7 +32,5 @@ class Rocket(Bound.Killable, Movable):
 
     def update(self):
         super().move()
-        if Conf.Rocket.UNLIMITED:
-            super().bound_kill()
-        elif dist(self.start_pos, self.rect.center) > Conf.Rocket.MAX_DISTANCE:
+        if not Conf.Rocket.UNLIMITED and dist(self.start_pos, self.rect.center) > Conf.Rocket.MAX_DISTANCE:
             super().kill()

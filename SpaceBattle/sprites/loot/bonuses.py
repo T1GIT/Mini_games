@@ -3,11 +3,11 @@ import random as rnd
 import pygame as pg
 
 from config import Configuration as Conf
-from sprites.interfaces.bound import Bound
+from sprites.interfaces.extended import Spawnable
 from utils.resources.image import Image as Img
 
 
-class Bonus(Bound.Killable):
+class Bonus(Spawnable):
     """
     Class of the moving bonuses.
     Moves all the time
@@ -23,7 +23,6 @@ class Bonus(Bound.Killable):
 
     def update(self):
         super().move()
-        super().bound_kill()
 
 
 class Heal(Bonus):

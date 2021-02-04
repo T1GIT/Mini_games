@@ -40,6 +40,10 @@ class Game(Resetable):
         self.heal_timer = Timer(Conf.Bonus.Period.HEAL)
         self.losing_timer = Timer(Conf.Game.LOSE_DELAY)
         self.frames_timer = Timer(Conf.Overlay.Framerate.PERIOD)
+        # Spawners
+        self.meteor_spawner = Spawner(Meteor)
+        self.piece_spawner = Spawner(Piece)
+        self.heal_spawner = Spawner(Heal)
         # Background
         w0, h0 = Img.get_background().get_size()
         tar_size = max(w0, h0) * max((Conf.Window.WIDTH / w0, Conf.Window.HEIGHT / h0))
@@ -50,33 +54,16 @@ class Game(Resetable):
         Erases all mobs and objects
         """
         self.comp_overlay.reset()
-        Groups.METEORS.kill()
-        Groups.ROCKETS.kill()
-        Groups.PIECES.kill()
-        Groups.HEALS.kill()
+        self.piece_spawner.get_group().kill_all()
+        self.meteor_spawner.get_group().kill_all()
+        self.heal_spawner.get_group().kill_all()
+        self.comp_overlay.show()
         self.ship.kill()
         self.ship = Ship()
-        self.game_over = False
-        self.running = False
-
-    def start(self):
-        """
-        Starts the game
-        """
-        self.game_over = False
-        self.comp_overlay.show()
         self.ship.add(Groups.ALL)
         self.ship.locate(Conf.Window.WIDTH // 2, Conf.Window.HEIGHT // 2)
         Groups.ALL.add(self.ship)
-        if not Conf.Meteor.BY_TIME:
-            meteors = Spawner.many(Meteor, Conf.Meteor.QUANTITY)
-            Groups.ALL.add(meteors)
-            Groups.METEORS.add(meteors)
-        pieces = Spawner.many(Piece, Conf.Piece.QUANTITY, True)
-        Groups.ALL.add(pieces)
-        Groups.PIECES.add(pieces)
         self.running = True
-        self.mainloop()
 
     def lose(self):
         if not self.game_over:
@@ -85,8 +72,8 @@ class Game(Resetable):
             Animation.on_sprite("ship", self.ship, max(self.ship.rect.size) * Conf.Ship.ANIM_SCALE)
             self.ship.kill()
             self.losing_timer.start()
-            self.game_over = True
             Snd.game_over()
+            self.game_over = True
 
     def event_handler(self, events: [Event]):
         """
@@ -127,7 +114,7 @@ class Game(Resetable):
                 self.lose()
             # Shooting
             if shoot and self.ship.can_shoot():
-                self.ship.shoot()
+                Groups.ALL.add(*self.ship.shoot())
             # Moving
             self.ship.accelerate(x, -y)
 
@@ -159,28 +146,25 @@ class Game(Resetable):
         pg.display.flip()
 
     def colliding(self):
-        hits = Collider.rockets_meteors()
+        hits = Collider.rockets_meteors(self.ship.get_group(), self.meteor_spawner.get_group())
         self.comp_overlay.score.up(hits)
         if not self.game_over:
-            wounds = Collider.ship_to_group(self.ship, Groups.METEORS, Snd.ex_meteor, "meteor")
+            wounds = Collider.ship_to_group(self.ship, self.meteor_spawner.get_group(), Snd.ex_meteor, "meteor")
             self.comp_overlay.health.down(wounds)
-            heals = Collider.ship_to_group(self.ship, Groups.HEALS, Snd.heal, "heal", Conf.Bonus.ANIM_SIZE)
+            heals = Collider.ship_to_group(self.ship, self.heal_spawner.get_group(), Snd.heal, "heal", Conf.Bonus.ANIM_SIZE)
             self.comp_overlay.health.up(heals)
 
     def spawning(self):
         if Conf.Meteor.BY_TIME:
             if self.meteor_timer.is_ready():
-                Spawner.one(Meteor).add(Groups.ALL, Groups.METEORS)
+                Groups.ALL.add(*self.meteor_spawner.spawn())
                 self.meteor_timer.start()
         else:
-            meteors = Spawner.many(Meteor, Conf.Meteor.QUANTITY - len(Groups.METEORS))
-            Groups.ALL.add(meteors)
-            Groups.METEORS.add(meteors)
-        pieces = Spawner.many(Piece, Conf.Piece.QUANTITY - len(Groups.PIECES))
-        Groups.ALL.add(pieces)
-        Groups.PIECES.add(pieces)
+            Groups.ALL.add(*self.meteor_spawner.spawn(Conf.Meteor.QUANTITY - len(self.meteor_spawner.get_group())))
+            self.meteor_timer.start()
+        Groups.ALL.add(*self.piece_spawner.spawn(Conf.Piece.QUANTITY - len(self.piece_spawner.get_group())))
         if self.heal_timer.is_ready():
-            Spawner.one(Heal).add(Groups.ALL, Groups.HEALS)
+            Groups.ALL.add(*self.heal_spawner.spawn())
             self.heal_timer.start()
 
     def refreshing_framerate(self):
