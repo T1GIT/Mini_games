@@ -10,7 +10,7 @@ class Configuration:
 
     class Window:
         TITLE = "Space Battle"
-        FULLSCREEN = False
+        FULLSCREEN = True
         WIDTH = 1000
         HEIGHT = 1000
 

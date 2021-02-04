@@ -63,6 +63,7 @@ class Game(Resetable):
         self.ship.add(Groups.ALL)
         self.ship.locate(Conf.Window.WIDTH // 2, Conf.Window.HEIGHT // 2)
         Groups.ALL.add(self.ship)
+        self.game_over = False
         self.running = True
 
     def lose(self):
